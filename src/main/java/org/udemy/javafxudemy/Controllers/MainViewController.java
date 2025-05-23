@@ -22,6 +22,9 @@ public class MainViewController implements Initializable {
     private MenuItem menuItemClient;
 
     @FXML
+    private MenuItem menuItemProduct;
+
+    @FXML
     private MenuItem menuItemAbout;
 
     @FXML
@@ -31,8 +34,11 @@ public class MainViewController implements Initializable {
     }
 
     @FXML
+    public void onMenuItemProductAction(){
+        loadView("/org/udemy/javafxudemy/ProductView.fxml");
+    }
+    @FXML
     public void onMenuItemAboutAction(){
-        //TODO: Handle the action
         loadView("/org/udemy/javafxudemy/AboutView.fxml");
     }
 
