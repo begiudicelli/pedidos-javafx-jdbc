@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ProductDaoJDBC implements ProductDao {
@@ -38,22 +39,15 @@ public class ProductDaoJDBC implements ProductDao {
     public Product findById(Integer id) {
         PreparedStatement st = null;
         ResultSet rs = null;
-        try{
-            String query = "SELECT * FROM product " +
-                            "WHERE id_product = ?";
+        String query = "SELECT * FROM product WHERE id_product = ? ORDER BY product_name";
 
+        try{
             st = conn.prepareStatement(query);
             st.setInt(1, id);
             rs = st.executeQuery();
 
             if(rs.next()){
-                Product product = new Product();
-                product.setId(rs.getInt("id_product"));
-                product.setName(rs.getString("product_name"));
-                product.setCreated_at(rs.getDate("created_at").toLocalDate());
-                product.setUnitPrice(rs.getDouble("unit_price"));
-                product.setIsActive(rs.getInt("is_active"));
-                return product;
+                return instantiateProduct(rs);
             }
 
             return null;
@@ -68,8 +62,39 @@ public class ProductDaoJDBC implements ProductDao {
 
     @Override
     public List<Product> findAll() {
-        //Mock
-        return null;
+        PreparedStatement st = null;
+        ResultSet rs = null;
+        String query = "SELECT * FROM product";
+        try{
+            st = conn.prepareStatement(query);
+            rs = st.executeQuery();
+
+            List<Product> productList = new ArrayList<>();
+
+            while(rs.next()){
+                Product product = instantiateProduct(rs);
+                productList.add(product);
+            }
+
+            return productList;
+        } catch (SQLException e) {
+            throw new DbException(e.getMessage());
+        }
+        finally {
+            DB.closeStatement(st);
+            DB.closeResultSet(rs);
+        }
+    }
+
+
+    private Product instantiateProduct(ResultSet rs) throws SQLException {
+        Product product = new Product();
+        product.setId(rs.getInt("id_product"));
+        product.setName(rs.getString("product_name"));
+        product.setCreatedAt(rs.getDate("created_at").toLocalDate());
+        product.setUnitPrice(rs.getDouble("unit_price"));
+        product.setIsActive(rs.getBoolean("is_active"));
+        return product;
     }
 
 }

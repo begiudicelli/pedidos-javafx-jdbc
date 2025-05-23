@@ -12,19 +12,19 @@ public class Product implements Serializable {
     private Integer id;
     private String name;
     private Double unitPrice;
-    private int isActive;
-    private LocalDate created_at;
+    private boolean isActive;
+    private LocalDate createdAt;
 
     public Product(){
 
     }
 
-    public Product(Integer id, String name, Double unitPrice, int isActive, LocalDate created_at) {
+    public Product(Integer id, String name, Double unitPrice, boolean isActive, LocalDate createdAt) {
         this.id = id;
         this.name = name;
         this.unitPrice = unitPrice;
         this.isActive = isActive;
-        this.created_at = created_at;
+        this.createdAt = createdAt;
     }
 
     public Integer getId() {
@@ -51,20 +51,20 @@ public class Product implements Serializable {
         this.unitPrice = unitPrice;
     }
 
-    public int getIsActive() {
+    public boolean getIsActive() {
         return isActive;
     }
 
-    public void setIsActive(int isActive) {
+    public void setIsActive(boolean isActive) {
         this.isActive = isActive;
     }
 
-    public LocalDate getCreated_at() {
-        return created_at;
+    public LocalDate getCreatedAt() {
+        return createdAt;
     }
 
-    public void setCreated_at(LocalDate created_at) {
-        this.created_at = created_at;
+    public void setCreatedAt(LocalDate created_at) {
+        this.createdAt = created_at;
     }
 
     @Override
@@ -86,7 +86,7 @@ public class Product implements Serializable {
                 ", name='" + name + '\'' +
                 ", unitPrice=" + unitPrice +
                 ", isActive=" + isActive +
-                ", created_at=" + created_at +
+                ", created_at=" + createdAt +
                 '}';
     }
 }

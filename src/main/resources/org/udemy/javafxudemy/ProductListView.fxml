@@ -22,8 +22,11 @@
       </ToolBar>
       <TableView fx:id="tableViewProduct" prefHeight="200.0" prefWidth="200.0">
         <columns>
-          <TableColumn fx:id="tableColumnId" prefWidth="75.0" text="ID" />
-          <TableColumn fx:id="tableColumnName" prefWidth="75.0" text="Name" />
+          <TableColumn fx:id="tableColumnId" prefWidth="30.0" text="ID" />
+          <TableColumn fx:id="tableColumnName" prefWidth="200.0" text="Name" />
+            <TableColumn fx:id="tableColumnPrice" prefWidth="100.0" text="Price" />
+            <TableColumn fx:id="tableColumnIsActive" prefWidth="50.0" text="Active" />
+            <TableColumn fx:id="tableColumnDateCreated" prefWidth="100.0" text="Date Created" />
         </columns>
       </TableView>
    </children>

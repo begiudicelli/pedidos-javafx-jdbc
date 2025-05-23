@@ -14,6 +14,7 @@ import org.udemy.javafxudemy.model.entities.Product;
 import org.udemy.javafxudemy.model.services.ProductService;
 
 import java.net.URL;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -21,14 +22,13 @@ public class ProductListController implements Initializable {
 
     private ProductService productService;
 
-    @FXML
-    private TableView<Product> tableViewProduct;
-
-    @FXML
-    private TableColumn<Product, Integer> tableColumnId;
-
-    @FXML
-    private TableColumn<Product, String> tableColumnName;
+    //Table view
+    @FXML private TableView<Product> tableViewProduct;
+    @FXML private TableColumn<Product, Integer> tableColumnId;
+    @FXML private TableColumn<Product, String> tableColumnName;
+    @FXML private TableColumn<Product, Double> tableColumnPrice;
+    @FXML private TableColumn<Product, Boolean> tableColumnIsActive;
+    @FXML private TableColumn<Product, LocalDate> tableColumnDateCreated;
 
     @FXML
     private Button btNewProduct;
@@ -53,6 +53,9 @@ public class ProductListController implements Initializable {
     private void initializeNodes(){
         tableColumnId.setCellValueFactory(new PropertyValueFactory<>("id"));
         tableColumnName.setCellValueFactory(new PropertyValueFactory<>("name"));
+        tableColumnPrice.setCellValueFactory(new PropertyValueFactory<>("unitPrice"));
+        tableColumnIsActive.setCellValueFactory(new PropertyValueFactory<>("isActive"));
+        tableColumnDateCreated.setCellValueFactory(new PropertyValueFactory<>("createdAt"));
 
         Stage stage = (Stage) Main.getMainScene().getWindow();
         tableViewProduct.prefHeightProperty().bind(stage.heightProperty());
