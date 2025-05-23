@@ -3,8 +3,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-
-<ScrollPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1">
+<ScrollPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.udemy.javafxudemy.Controllers.MainViewController">
    <content>
       <VBox prefHeight="321.0" prefWidth="485.0">
          <children>
@@ -12,12 +11,12 @@
               <menus>
                 <Menu mnemonicParsing="false" text="Registration">
                   <items>
-                    <MenuItem mnemonicParsing="false" text="Client" />
+                    <MenuItem fx:id="menuItemClient" mnemonicParsing="false" onAction="#onMenuItemClientAction" text="Client" />
                   </items>
                 </Menu>
                 <Menu mnemonicParsing="false" text="Help">
                   <items>
-                    <MenuItem mnemonicParsing="false" text="About" />
+                    <MenuItem fx:id="menuItemAbout" mnemonicParsing="false" onAction="#onMenuItemAboutAction" text="About" />
                   </items>
                 </Menu>
               </menus>
