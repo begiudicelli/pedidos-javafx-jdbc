@@ -10,11 +10,13 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.VBox;
 import org.udemy.javafxudemy.Main;
+import org.udemy.javafxudemy.Model.services.ProductService;
 import org.udemy.javafxudemy.Util.Alerts;
 
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.function.Consumer;
 
 public class MainViewController implements Initializable {
 
@@ -35,11 +37,14 @@ public class MainViewController implements Initializable {
 
     @FXML
     public void onMenuItemProductAction(){
-        loadView("/org/udemy/javafxudemy/ProductListView.fxml");
+        loadView("/org/udemy/javafxudemy/ProductListView.fxml", (ProductListController controller)->{
+            controller.setProductService(new ProductService());
+            controller.updateTableView();
+        });
     }
     @FXML
     public void onMenuItemAboutAction(){
-        loadView("/org/udemy/javafxudemy/AboutView.fxml");
+        loadView("/org/udemy/javafxudemy/AboutView.fxml", x -> {});
     }
 
 
@@ -48,7 +53,7 @@ public class MainViewController implements Initializable {
 
     }
 
-    private synchronized void loadView(String absolutePath){
+    private synchronized <T> void loadView(String absolutePath, Consumer<T> initializingAction){
         try{
             FXMLLoader loader = new FXMLLoader(getClass().getResource(absolutePath));
             VBox newVBox = loader.load();
@@ -60,6 +65,9 @@ public class MainViewController implements Initializable {
             mainVbox.getChildren().clear();
             mainVbox.getChildren().add(mainMenu);
             mainVbox.getChildren().addAll(newVBox.getChildren());
+
+            T controller = loader.getController();
+            initializingAction.accept(controller);
 
         } catch (IOException e) {
             Alerts.showAlert("IO Exception", "Error loading view", e.getMessage(), Alert.AlertType.ERROR);

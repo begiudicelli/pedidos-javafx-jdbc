@@ -4,6 +4,7 @@ module org.udemy.javafxudemy {
 
     opens org.udemy.javafxudemy to javafx.fxml;
     opens org.udemy.javafxudemy.Controllers to javafx.fxml;
+    opens org.udemy.javafxudemy.Model.entities to javafx.fxml, javafx.base;
 
     exports org.udemy.javafxudemy;
     exports org.udemy.javafxudemy.Controllers;
