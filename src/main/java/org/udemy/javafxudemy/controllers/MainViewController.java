@@ -1,4 +1,4 @@
-package org.udemy.javafxudemy.Controllers;
+package org.udemy.javafxudemy.controllers;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -10,8 +10,8 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.VBox;
 import org.udemy.javafxudemy.Main;
-import org.udemy.javafxudemy.Model.services.ProductService;
-import org.udemy.javafxudemy.Util.Alerts;
+import org.udemy.javafxudemy.model.services.ProductService;
+import org.udemy.javafxudemy.util.Alerts;
 
 import java.io.IOException;
 import java.net.URL;

@@ -1,4 +1,4 @@
-package org.udemy.javafxudemy.Model.entities;
+package org.udemy.javafxudemy.model.entities;
 
 import java.io.Serial;
 import java.io.Serializable;

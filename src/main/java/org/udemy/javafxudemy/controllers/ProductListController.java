@@ -1,4 +1,4 @@
-package org.udemy.javafxudemy.Controllers;
+package org.udemy.javafxudemy.controllers;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -10,8 +10,8 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 import org.udemy.javafxudemy.Main;
-import org.udemy.javafxudemy.Model.entities.Product;
-import org.udemy.javafxudemy.Model.services.ProductService;
+import org.udemy.javafxudemy.model.entities.Product;
+import org.udemy.javafxudemy.model.services.ProductService;
 
 import java.net.URL;
 import java.util.List;
