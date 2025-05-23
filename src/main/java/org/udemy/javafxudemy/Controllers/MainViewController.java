@@ -35,7 +35,7 @@ public class MainViewController implements Initializable {
 
     @FXML
     public void onMenuItemProductAction(){
-        loadView("/org/udemy/javafxudemy/ProductView.fxml");
+        loadView("/org/udemy/javafxudemy/ProductListView.fxml");
     }
     @FXML
     public void onMenuItemAboutAction(){
