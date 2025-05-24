@@ -22,6 +22,7 @@ import org.udemy.javafxudemy.util.Alerts;
 import org.udemy.javafxudemy.util.Utils;
 
 import java.io.IOException;
+import java.net.PortUnreachableException;
 import java.net.URL;
 import java.time.LocalDate;
 import java.util.List;
@@ -47,7 +48,8 @@ public class ProductListController implements Initializable {
     @FXML
     public void onBtNewProductAction(ActionEvent event){
         Stage parentStage = Utils.currentStage(event);
-        createDialogForm("/org/udemy/javafxudemy/ProductForm.fxml", parentStage);
+        Product product = new Product();
+        createDialogForm(product, "/org/udemy/javafxudemy/ProductForm.fxml", parentStage);
     }
 
     @Override
@@ -78,10 +80,14 @@ public class ProductListController implements Initializable {
         tableViewProduct.setItems(obsList);
     }
 
-    private void createDialogForm(String absolutePath, Stage parentStage){
+    private void createDialogForm(Product product, String absolutePath, Stage parentStage){
         try{
             FXMLLoader loader = new FXMLLoader(getClass().getResource(absolutePath));
             Pane pane = loader.load();
+
+            ProductFormController controller = loader.getController();
+            controller.setProduct(product);
+            controller.updateFormData();
 
             Stage dialogStage = new Stage();
             dialogStage.setTitle("Enter product data.");
