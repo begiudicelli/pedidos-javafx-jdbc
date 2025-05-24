@@ -22,18 +22,18 @@
             <Label text="Price" GridPane.rowIndex="2" />
             <Label text="ID" />
             <Label text="Name" GridPane.rowIndex="1" />
-            <TextField editable="false" prefWidth="289.0" GridPane.columnIndex="1">
+            <TextField fx:id="txtId" editable="false" prefWidth="289.0" GridPane.columnIndex="1">
                <GridPane.margin>
                   <Insets />
                </GridPane.margin></TextField>
-            <TextField GridPane.columnIndex="1" GridPane.rowIndex="1" />
-            <TextField GridPane.columnIndex="1" GridPane.rowIndex="2" />
-            <Label textFill="RED" GridPane.columnIndex="2" GridPane.rowIndex="1" />
-            <Label textFill="RED" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+            <TextField fx:id="txtName" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <TextField fx:id="txtPrice" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+            <Label fx:id="labelErrorName" textFill="RED" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+            <Label fx:id="labelErrorPrice" textFill="RED" GridPane.columnIndex="2" GridPane.rowIndex="2" />
             <HBox prefHeight="100.0" prefWidth="200.0" spacing="20.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
                <children>
-                  <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="60.0" text="Save" />
-                  <Button mnemonicParsing="false" prefHeight="47.0" prefWidth="60.0" text="Cancel" />
+                  <Button fx:id="btnSave" mnemonicParsing="false" onAction="#onBtnSaveAction" prefHeight="25.0" prefWidth="60.0" text="Save" />
+                  <Button fx:id="btnCancel" mnemonicParsing="false" onAction="#onBtnCancelAction" prefHeight="47.0" prefWidth="60.0" text="Cancel" />
                </children>
             </HBox>
          </children>
