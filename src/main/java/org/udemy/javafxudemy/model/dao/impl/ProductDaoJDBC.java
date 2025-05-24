@@ -14,7 +14,7 @@ import java.util.List;
 
 public class ProductDaoJDBC implements ProductDao {
 
-    private Connection conn;
+    private final Connection conn;
 
     public ProductDaoJDBC(Connection conn){
         this.conn = conn;
@@ -24,7 +24,9 @@ public class ProductDaoJDBC implements ProductDao {
     public void insert(Product obj) {
         PreparedStatement st = null;
         ResultSet rs = null;
-        String query = "INSERT INTO product (product_name, unit_price, is_active, created_at) VALUES (?, ?, ?, ?)";
+        String query = "INSERT INTO product " +
+                        "(product_name, unit_price, is_active, created_at) " +
+                        "VALUES (?, ?, ?, ?)";
 
         try{
             st = conn.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
@@ -55,7 +57,25 @@ public class ProductDaoJDBC implements ProductDao {
 
     @Override
     public void update(Product obj) {
+        PreparedStatement st = null;
+        String query = "UPDATE product " +
+                        "SET product_name = ?, unit_price = ?, is_active = ? " +
+                        "WHERE id_product = ?";
 
+        try {
+            st = conn.prepareStatement(query);
+            st.setString(1, obj.getName());
+            st.setDouble(2, obj.getUnitPrice());
+            st.setBoolean(3, obj.getIsActive());
+            st.setInt(4, obj.getId());
+
+            st.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new DbException(e.getMessage());
+        } finally {
+            DB.closeStatement(st);
+        }
     }
 
     @Override

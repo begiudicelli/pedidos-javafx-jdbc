@@ -5,29 +5,33 @@ import org.udemy.javafxudemy.model.dao.ProductDao;
 import org.udemy.javafxudemy.model.dao.impl.ProductDaoJDBC;
 import org.udemy.javafxudemy.model.entities.Product;
 
-import java.time.LocalDate;
+import java.sql.Connection;
 
 public class Program {
     public static void main(String[] args) {
-        // Obtém a conexão com o banco de dados
-        try {
-            var conn = DB.getConnection(); // Certifique-se que DB.getConnection() está implementado
+        Connection conn = null;
 
-            // Cria um DAO para inserção de produtos
+        try {
+            conn = DB.getConnection();
             ProductDao productDao = new ProductDaoJDBC(conn);
 
-            // Cria um produto fictício para inserir
-            Product newProduct = new Product();
-            newProduct.setName("Samsung Galaxy 13");
-            newProduct.setUnitPrice(899.0);
-            newProduct.setIsActive(true);
-            newProduct.setCreatedAt(LocalDate.now());
-            productDao.insert(newProduct);
+            Product product = productDao.findById(9);
 
-            System.out.println("Produto inserido com sucesso!");
+            if (product != null) {
+                System.out.println("Produto encontrado: " + product.getName());
+                System.out.println("Preço atual: R$" + product.getUnitPrice());
+
+                product.setUnitPrice(product.getUnitPrice() + 100.00);
+
+                productDao.update(product);
+
+                System.out.println("Preço atualizado com sucesso!");
+            } else {
+                System.out.println("Produto com id = 9 não encontrado.");
+            }
 
         } catch (Exception e) {
-            System.out.println("Erro ao inserir produto: " + e.getMessage());
+            e.printStackTrace();
         } finally {
             DB.closeConnection();
         }
