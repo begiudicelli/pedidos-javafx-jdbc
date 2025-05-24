@@ -1,4 +1,4 @@
-package org.udemy.javafxudemy.controllers;
+package org.udemy.javafxudemy.gui.controllers;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;

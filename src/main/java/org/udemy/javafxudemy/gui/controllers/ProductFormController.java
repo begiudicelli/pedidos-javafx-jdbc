@@ -1,4 +1,4 @@
-package org.udemy.javafxudemy.controllers;
+package org.udemy.javafxudemy.gui.controllers;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -10,6 +10,7 @@ import javafx.scene.control.TextField;
 import org.udemy.javafxudemy.db.DbException;
 import org.udemy.javafxudemy.gui.listeners.DataChangeListener;
 import org.udemy.javafxudemy.model.entities.Product;
+import org.udemy.javafxudemy.model.exceptions.ValidationException;
 import org.udemy.javafxudemy.model.services.ProductService;
 import org.udemy.javafxudemy.gui.util.Alerts;
 import org.udemy.javafxudemy.gui.util.Constraints;
@@ -17,9 +18,7 @@ import org.udemy.javafxudemy.gui.util.Utils;
 
 import java.net.URL;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
 
 public class ProductFormController implements Initializable {
 
@@ -50,7 +49,10 @@ public class ProductFormController implements Initializable {
             productService.saveOrUpdate(product);
             notifyDataChangeListeners();
             Utils.currentStage(event).close();
-        }catch(DbException e){
+        }catch(ValidationException e){
+            setLabelErrors(e.getErros());
+        }
+        catch(DbException e){
             Alerts.showAlert("Database exception", "Error saving product", e.getMessage(), Alert.AlertType.ERROR);
         }
     }
@@ -59,12 +61,23 @@ public class ProductFormController implements Initializable {
 
     private Product getFormData() {
         Product product = new Product();
+        ValidationException exception = new ValidationException("Validation error");
+
         product.setId(Utils.tryParseToInt(txtId.getText()));
+
+        if(txtName.getText() == null || txtName.getText().isBlank()){
+            exception.addError("name", "Field cant be empty");
+        }
+
         product.setName(txtName.getText());
         product.setUnitPrice(Utils.tryParseToDouble(txtPrice.getText()));
 
         product.setIsActive(true);
         product.setCreatedAt(LocalDate.now());
+
+        if(!exception.getErros().isEmpty()){
+            throw exception;
+        }
 
         return product;
     }
@@ -93,6 +106,14 @@ public class ProductFormController implements Initializable {
         Constraints.setTextFieldTextOnly(txtName);
         Constraints.setTextFieldMaxLength(txtName, 30);
         Constraints.setTextFieldDouble(txtPrice);
+    }
+
+    private void setLabelErrors(Map<String, String> errors){
+        Set<String> fields = errors.keySet();
+
+        if(fields.contains("name")){
+            labelErrorName.setText(errors.get("name"));
+        }
     }
 
     public void subscribeDataChangeListener(DataChangeListener listener){

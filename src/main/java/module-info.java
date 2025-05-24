@@ -4,9 +4,9 @@ module org.udemy.javafxudemy {
     requires java.sql;
 
     opens org.udemy.javafxudemy to javafx.fxml;
-    opens org.udemy.javafxudemy.controllers to javafx.fxml;
+    opens org.udemy.javafxudemy.gui.controllers to javafx.fxml;
     opens org.udemy.javafxudemy.model.entities to javafx.fxml, javafx.base;
 
     exports org.udemy.javafxudemy;
-    exports org.udemy.javafxudemy.controllers;
+    exports org.udemy.javafxudemy.gui.controllers;
 }
