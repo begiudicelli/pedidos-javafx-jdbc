@@ -1,17 +1,27 @@
 package org.udemy.javafxudemy.controllers;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import org.udemy.javafxudemy.db.DbException;
 import org.udemy.javafxudemy.model.entities.Product;
+import org.udemy.javafxudemy.model.services.ProductService;
+import org.udemy.javafxudemy.util.Alerts;
 import org.udemy.javafxudemy.util.Constraints;
+import org.udemy.javafxudemy.util.Utils;
 
 import java.net.URL;
+import java.time.LocalDate;
 import java.util.ResourceBundle;
 
 public class ProductFormController implements Initializable {
+
+    private Product product;
+    private ProductService productService;
 
     @FXML private TextField txtId;
     @FXML private TextField txtName;
@@ -23,20 +33,36 @@ public class ProductFormController implements Initializable {
     @FXML private Button btnSave;
     @FXML private Button btnCancel;
 
-    private Product product;
 
-    public void setProduct(Product product){
-        this.product = product;
+    @FXML
+    public void onBtnSaveAction(ActionEvent event){
+        if(product == null) throw new IllegalStateException("Product was null");
+        if(productService == null) throw new IllegalStateException("Product service was null");
+
+        try{
+            product = getFormData();
+            productService.saveOrUpdate(product);
+            Utils.currentStage(event).close();
+        }catch(DbException e){
+            Alerts.showAlert("Database exception", "Error saving product", e.getMessage(), Alert.AlertType.ERROR);
+        }
+    }
+
+    private Product getFormData() {
+        Product product = new Product();
+        product.setId(Utils.tryParseToInt(txtId.getText()));
+        product.setName(txtName.getText());
+        product.setUnitPrice(Utils.tryParseToDouble(txtId.getText()));
+
+        product.setIsActive(true);
+        product.setCreatedAt(LocalDate.now());
+
+        return product;
     }
 
     @FXML
-    public void onBtnSaveAction(){
-        System.out.println("onBtnSaveAction");
-    }
-
-    @FXML
-    public void onBtnCancelAction(){
-        System.out.println("onBtnCancelAction");
+    public void onBtnCancelAction(ActionEvent event){
+        Utils.currentStage(event).close();
     }
 
 
@@ -58,5 +84,14 @@ public class ProductFormController implements Initializable {
         Constraints.setTextFieldTextOnly(txtName);
         Constraints.setTextFieldMaxLength(txtName, 30);
         Constraints.setTextFieldDouble(txtPrice);
+    }
+
+
+    public void setProduct(Product product){
+        this.product = product;
+    }
+
+    public void setProductService(ProductService productService){
+        this.productService = productService;
     }
 }
