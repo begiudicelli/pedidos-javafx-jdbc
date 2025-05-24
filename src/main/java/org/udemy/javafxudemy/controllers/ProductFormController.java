@@ -8,20 +8,26 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import org.udemy.javafxudemy.db.DbException;
+import org.udemy.javafxudemy.gui.listeners.DataChangeListener;
 import org.udemy.javafxudemy.model.entities.Product;
 import org.udemy.javafxudemy.model.services.ProductService;
-import org.udemy.javafxudemy.util.Alerts;
-import org.udemy.javafxudemy.util.Constraints;
-import org.udemy.javafxudemy.util.Utils;
+import org.udemy.javafxudemy.gui.util.Alerts;
+import org.udemy.javafxudemy.gui.util.Constraints;
+import org.udemy.javafxudemy.gui.util.Utils;
 
 import java.net.URL;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class ProductFormController implements Initializable {
 
     private Product product;
     private ProductService productService;
+
+    private List<DataChangeListener> dataChangeListeners = new ArrayList<>();
+
 
     @FXML private TextField txtId;
     @FXML private TextField txtName;
@@ -42,17 +48,20 @@ public class ProductFormController implements Initializable {
         try{
             product = getFormData();
             productService.saveOrUpdate(product);
+            notifyDataChangeListeners();
             Utils.currentStage(event).close();
         }catch(DbException e){
             Alerts.showAlert("Database exception", "Error saving product", e.getMessage(), Alert.AlertType.ERROR);
         }
     }
 
+
+
     private Product getFormData() {
         Product product = new Product();
         product.setId(Utils.tryParseToInt(txtId.getText()));
         product.setName(txtName.getText());
-        product.setUnitPrice(Utils.tryParseToDouble(txtId.getText()));
+        product.setUnitPrice(Utils.tryParseToDouble(txtPrice.getText()));
 
         product.setIsActive(true);
         product.setCreatedAt(LocalDate.now());
@@ -86,6 +95,15 @@ public class ProductFormController implements Initializable {
         Constraints.setTextFieldDouble(txtPrice);
     }
 
+    public void subscribeDataChangeListener(DataChangeListener listener){
+        dataChangeListeners.add(listener);
+    }
+
+    private void notifyDataChangeListeners() {
+        for(DataChangeListener listener : dataChangeListeners){
+            listener.onDataChanged();
+        }
+    }
 
     public void setProduct(Product product){
         this.product = product;

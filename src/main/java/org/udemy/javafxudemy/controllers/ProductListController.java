@@ -16,19 +16,19 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.udemy.javafxudemy.Main;
+import org.udemy.javafxudemy.gui.listeners.DataChangeListener;
 import org.udemy.javafxudemy.model.entities.Product;
 import org.udemy.javafxudemy.model.services.ProductService;
-import org.udemy.javafxudemy.util.Alerts;
-import org.udemy.javafxudemy.util.Utils;
+import org.udemy.javafxudemy.gui.util.Alerts;
+import org.udemy.javafxudemy.gui.util.Utils;
 
 import java.io.IOException;
-import java.net.PortUnreachableException;
 import java.net.URL;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.ResourceBundle;
 
-public class ProductListController implements Initializable {
+public class ProductListController implements Initializable, DataChangeListener {
 
     private ProductService productService;
 
@@ -88,6 +88,7 @@ public class ProductListController implements Initializable {
             ProductFormController controller = loader.getController();
             controller.setProduct(product);
             controller.setProductService(new ProductService());
+            controller.subscribeDataChangeListener(this);
             controller.updateFormData();
 
             Stage dialogStage = new Stage();
@@ -100,5 +101,10 @@ public class ProductListController implements Initializable {
         } catch (IOException e) {
             Alerts.showAlert("IO Exception", "Error loading view", e.getMessage(), Alert.AlertType.ERROR);
         }
+    }
+
+    @Override
+    public void onDataChanged() {
+        updateTableView();
     }
 }

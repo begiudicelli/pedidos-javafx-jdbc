@@ -1,4 +1,4 @@
-package org.udemy.javafxudemy.util;
+package org.udemy.javafxudemy.gui.util;
 
 import javafx.scene.control.Alert;
 

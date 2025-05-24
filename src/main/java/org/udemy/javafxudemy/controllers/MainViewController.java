@@ -11,7 +11,7 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.VBox;
 import org.udemy.javafxudemy.Main;
 import org.udemy.javafxudemy.model.services.ProductService;
-import org.udemy.javafxudemy.util.Alerts;
+import org.udemy.javafxudemy.gui.util.Alerts;
 
 import java.io.IOException;
 import java.net.URL;

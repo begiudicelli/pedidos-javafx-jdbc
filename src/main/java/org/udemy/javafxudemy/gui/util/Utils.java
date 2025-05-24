@@ -1,4 +1,4 @@
-package org.udemy.javafxudemy.util;
+package org.udemy.javafxudemy.gui.util;
 
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
