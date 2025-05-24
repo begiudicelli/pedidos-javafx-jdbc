@@ -22,7 +22,35 @@ public class ProductDaoJDBC implements ProductDao {
 
     @Override
     public void insert(Product obj) {
+        PreparedStatement st = null;
+        ResultSet rs = null;
+        String query = "INSERT INTO product (product_name, unit_price, is_active, created_at) VALUES (?, ?, ?, ?)";
 
+        try{
+            st = conn.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
+            st.setString(1, obj.getName());
+            st.setDouble(2, obj.getUnitPrice());
+            st.setBoolean(3, obj.getIsActive());
+            st.setDate(4, java.sql.Date.valueOf(obj.getCreatedAt()));
+
+            int rowsAffected = st.executeUpdate();
+
+            if(rowsAffected > 0){
+                rs = st.getGeneratedKeys();
+                if(rs.next()){
+                    int id = rs.getInt(1);
+                    obj.setId(id);
+                }
+            }else{
+                throw new DbException("Unexpected error. No Line affected");
+            }
+        } catch (SQLException e) {
+            throw new DbException(e.getMessage());
+        }
+        finally {
+            DB.closeStatement(st);
+            DB.closeResultSet(rs);
+        }
     }
 
     @Override
