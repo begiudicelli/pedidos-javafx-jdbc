@@ -12,6 +12,14 @@ public class ProductService {
 
     private final ProductDao dao = DaoFactory.createProductDao();
 
+    public void insert(Product product){
+        dao.insert(product);
+    }
+
+    public void update(Product product){
+        dao.update(product);
+    }
+
     public List<Product> findAll(){
         return dao.findAll();
     }
