@@ -27,7 +27,8 @@
             <TableColumn fx:id="tableColumnPrice" prefWidth="100.0" text="Price" />
             <TableColumn fx:id="tableColumnIsActive" prefWidth="50.0" text="Active" />
             <TableColumn fx:id="tableColumnDateCreated" prefWidth="100.0" text="Date Created" />
-            <TableColumn fx:id="tableColumnEDIT" prefWidth="100.0"/>
+            <TableColumn fx:id="tableColumnEDIT" prefWidth="88.0"/>
+            <TableColumn fx:id="tableColumnREMOVE" prefWidth="88.0"/>
         </columns>
       </TableView>
    </children>

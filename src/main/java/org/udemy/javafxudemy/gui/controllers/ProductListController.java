@@ -14,6 +14,7 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.udemy.javafxudemy.Main;
+import org.udemy.javafxudemy.db.DbException;
 import org.udemy.javafxudemy.gui.listeners.DataChangeListener;
 import org.udemy.javafxudemy.model.entities.Product;
 import org.udemy.javafxudemy.model.services.ProductService;
@@ -24,6 +25,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class ProductListController implements Initializable, DataChangeListener {
@@ -38,6 +40,7 @@ public class ProductListController implements Initializable, DataChangeListener 
     @FXML private TableColumn<Product, Boolean> tableColumnIsActive;
     @FXML private TableColumn<Product, LocalDate> tableColumnDateCreated;
     @FXML private TableColumn<Product, Product> tableColumnEDIT;
+    @FXML private TableColumn<Product, Product> tableColumnREMOVE;
 
     @FXML
     private Button btNewProduct;
@@ -82,6 +85,42 @@ public class ProductListController implements Initializable, DataChangeListener 
         });
     }
 
+    private void initRemoveButtons() {
+        tableColumnREMOVE.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue()));
+        tableColumnREMOVE.setCellFactory(param -> new TableCell<Product, Product>() {
+            private final Button button = new Button("remove");
+
+            @Override
+            protected void updateItem(Product product, boolean empty) {
+                super.updateItem(product, empty);
+
+                if (product == null) {
+                    setGraphic(null);
+                    return;
+                }
+
+                setGraphic(button);
+                button.setOnAction(event -> removeEntity(product));
+            }
+        });
+    }
+
+    private void removeEntity(Product product){
+        Optional<ButtonType> result = Alerts.showConfirmation("Confirmation", "Are you sure to delete?");
+
+        if(result.get() == ButtonType.OK){
+            if(productService == null ) throw new IllegalStateException("Service was null");
+
+            try{
+                productService.remove(product);
+                updateTableView();
+            }catch(DbException e){
+                Alerts.showAlert("Error removing product", null, e.getMessage(), Alert.AlertType.ERROR);
+            }
+
+        }
+    }
+
     private void initializeNodes(){
         tableColumnId.setCellValueFactory(new PropertyValueFactory<>("id"));
         tableColumnName.setCellValueFactory(new PropertyValueFactory<>("name"));
@@ -100,6 +139,7 @@ public class ProductListController implements Initializable, DataChangeListener 
         obsList = FXCollections.observableArrayList(list);
         tableViewProduct.setItems(obsList);
         initEditButtons();
+        initRemoveButtons();
     }
 
     private void createDialogForm(Product product, String absolutePath, Stage parentStage){

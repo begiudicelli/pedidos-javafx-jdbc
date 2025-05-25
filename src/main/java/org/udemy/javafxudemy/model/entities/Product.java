@@ -12,14 +12,14 @@ public class Product implements Serializable {
     private Integer id;
     private String name;
     private Double unitPrice;
-    private boolean isActive;
+    private Boolean isActive;
     private LocalDate createdAt;
 
     public Product(){
 
     }
 
-    public Product(Integer id, String name, Double unitPrice, boolean isActive, LocalDate createdAt) {
+    public Product(Integer id, String name, Double unitPrice, Boolean isActive, LocalDate createdAt) {
         this.id = id;
         this.name = name;
         this.unitPrice = unitPrice;
@@ -51,11 +51,11 @@ public class Product implements Serializable {
         this.unitPrice = unitPrice;
     }
 
-    public boolean getIsActive() {
+    public Boolean getIsActive() {
         return isActive;
     }
 
-    public void setIsActive(boolean isActive) {
+    public void setIsActive(Boolean isActive) {
         this.isActive = isActive;
     }
 

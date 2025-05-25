@@ -44,7 +44,7 @@ public class ProductDaoJDBC implements ProductDao {
                     obj.setId(id);
                 }
             }else{
-                throw new DbException("Unexpected error. No Line affected");
+                throw new DbException("Unexpected error. No Line affected in product table.");
             }
         } catch (SQLException e) {
             throw new DbException(e.getMessage());
@@ -80,7 +80,23 @@ public class ProductDaoJDBC implements ProductDao {
 
     @Override
     public void deleteById(Integer id) {
-        //TODO: Update deleted method if needed
+        PreparedStatement st = null;
+        String query = "DELETE FROM product WHERE id_product = ?";
+
+        try {
+            st = conn.prepareStatement(query);
+            st.setInt(1, id);
+
+            int rowsAffected = st.executeUpdate();
+
+            if (rowsAffected == 0) {
+                throw new DbException("No product found with the given ID: " + id);
+            }
+        } catch (SQLException e) {
+            throw new DbException(e.getMessage());
+        } finally {
+            DB.closeStatement(st);
+        }
     }
 
     @Override

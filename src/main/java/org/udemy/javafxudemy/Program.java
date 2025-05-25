@@ -1,11 +1,12 @@
 package org.udemy.javafxudemy;
 
 import org.udemy.javafxudemy.db.DB;
-import org.udemy.javafxudemy.model.dao.ProductDao;
-import org.udemy.javafxudemy.model.dao.impl.ProductDaoJDBC;
-import org.udemy.javafxudemy.model.entities.Product;
+import org.udemy.javafxudemy.model.dao.ClientDao;
+import org.udemy.javafxudemy.model.dao.impl.ClientDaoJDBC;
+import org.udemy.javafxudemy.model.entities.Client;
 
 import java.sql.Connection;
+import java.time.LocalDate;
 
 public class Program {
     public static void main(String[] args) {
@@ -13,21 +14,34 @@ public class Program {
 
         try {
             conn = DB.getConnection();
-            ProductDao productDao = new ProductDaoJDBC(conn);
+            ClientDao clientDao = new ClientDaoJDBC(conn);
 
-            Product product = productDao.findById(9);
+            // Criando e configurando o cliente
+            Client client = new Client();
+            client.setName("Bernardo Giudicelli");
+            client.setPhone("31975295276");
+            client.setEmail("bernardo@gmail.com");
+            client.setAddress("Rua dos ouros 1200");
+            client.setCpf("13051928690");
+            client.setCreatedAt(LocalDate.now());
 
-            if (product != null) {
-                System.out.println("Produto encontrado: " + product.getName());
-                System.out.println("Preço atual: R$" + product.getUnitPrice());
+            // Inserindo cliente no banco de dados
+            clientDao.insert(client);
 
-                product.setUnitPrice(product.getUnitPrice() + 100.00);
+            // Buscando o cliente pelo ID gerado
+            Client insertedClient = clientDao.findById(client.getId());
 
-                productDao.update(product);
-
-                System.out.println("Preço atualizado com sucesso!");
+            if (insertedClient != null) {
+                System.out.println("Cliente inserido com sucesso:");
+                System.out.println("ID: " + insertedClient.getId());
+                System.out.println("Nome: " + insertedClient.getName());
+                System.out.println("Email: " + insertedClient.getEmail());
+                System.out.println("Telefone: " + insertedClient.getPhone());
+                System.out.println("Endereço: " + insertedClient.getAddress());
+                System.out.println("CPF: " + insertedClient.getCpf());
+                System.out.println("Data de criação: " + insertedClient.getCreatedAt());
             } else {
-                System.out.println("Produto com id = 9 não encontrado.");
+                System.out.println("Erro: Cliente não foi encontrado após inserção.");
             }
 
         } catch (Exception e) {

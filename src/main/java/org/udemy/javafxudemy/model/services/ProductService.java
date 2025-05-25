@@ -23,4 +23,8 @@ public class ProductService {
             dao.update(product);
         }
     }
+
+    public void remove(Product product){
+        dao.deleteById(product.getId());
+    }
 }
