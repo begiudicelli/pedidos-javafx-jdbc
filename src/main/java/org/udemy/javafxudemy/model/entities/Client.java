@@ -3,6 +3,7 @@ package org.udemy.javafxudemy.model.entities;
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class Client implements Serializable {
@@ -15,14 +16,14 @@ public class Client implements Serializable {
     private String email;
     private String address;
     private String cpf;
-    private LocalDate createdAt;
+    private LocalDateTime createdAt;
 
 
     public Client(){
 
     }
 
-    public Client(Integer id, String name, String phone, String email, String address, String cpf, LocalDate createdAt) {
+    public Client(Integer id, String name, String phone, String email, String address, String cpf, LocalDateTime createdAt) {
         this.id = id;
         this.name = name;
         this.phone = phone;
@@ -80,11 +81,11 @@ public class Client implements Serializable {
         this.cpf = cpf;
     }
 
-    public LocalDate getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(LocalDate createdAt) {
+    public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
 

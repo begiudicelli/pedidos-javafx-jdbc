@@ -140,7 +140,7 @@ public class ClientDaoJDBC implements ClientDao {
         client.setEmail(rs.getString("email"));
         client.setAddress(rs.getString("address"));
         client.setCpf(rs.getString("cpf"));
-        client.setCreatedAt(rs.getDate("created_at").toLocalDate());
+        client.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
         return client;
     }
 

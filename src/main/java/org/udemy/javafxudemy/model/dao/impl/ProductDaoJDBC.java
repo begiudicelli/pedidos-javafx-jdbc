@@ -154,7 +154,7 @@ public class ProductDaoJDBC implements ProductDao {
         Product product = new Product();
         product.setId(rs.getInt("id_product"));
         product.setName(rs.getString("product_name"));
-        product.setCreatedAt(rs.getDate("created_at").toLocalDate());
+        product.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
         product.setUnitPrice(rs.getDouble("unit_price"));
         product.setIsActive(rs.getBoolean("is_active"));
         return product;

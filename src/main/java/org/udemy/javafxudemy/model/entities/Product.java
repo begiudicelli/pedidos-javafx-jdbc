@@ -2,7 +2,7 @@ package org.udemy.javafxudemy.model.entities;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class Product implements Serializable {
@@ -13,13 +13,13 @@ public class Product implements Serializable {
     private String name;
     private Double unitPrice;
     private Boolean isActive;
-    private LocalDate createdAt;
+    private LocalDateTime createdAt;
 
     public Product(){
 
     }
 
-    public Product(Integer id, String name, Double unitPrice, Boolean isActive, LocalDate createdAt) {
+    public Product(Integer id, String name, Double unitPrice, Boolean isActive, LocalDateTime createdAt) {
         this.id = id;
         this.name = name;
         this.unitPrice = unitPrice;
@@ -59,11 +59,11 @@ public class Product implements Serializable {
         this.isActive = isActive;
     }
 
-    public LocalDate getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(LocalDate created_at) {
+    public void setCreatedAt(LocalDateTime created_at) {
         this.createdAt = created_at;
     }
 

@@ -18,6 +18,7 @@ import org.udemy.javafxudemy.gui.util.Utils;
 
 import java.net.URL;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 
 public class ProductFormController implements Initializable {
@@ -73,7 +74,7 @@ public class ProductFormController implements Initializable {
         product.setUnitPrice(Utils.tryParseToDouble(txtPrice.getText()));
 
         product.setIsActive(true);
-        product.setCreatedAt(LocalDate.now());
+        product.setCreatedAt(LocalDateTime.now());
 
         if(!exception.getErros().isEmpty()){
             throw exception;
