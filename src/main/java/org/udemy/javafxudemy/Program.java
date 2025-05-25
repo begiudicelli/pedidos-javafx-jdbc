@@ -18,11 +18,11 @@ public class Program {
 
             // Criando e configurando o cliente
             Client client = new Client();
-            client.setName("Bernardo Giudicelli");
+            client.setName("Rafael Giudicelli");
             client.setPhone("31975295276");
-            client.setEmail("bernardo@gmail.com");
-            client.setAddress("Rua dos ouros 1200");
-            client.setCpf("13051928690");
+            client.setEmail("rafael@gmail.com");
+            client.setAddress("Rua da maldade 1200");
+            client.setCpf("13051818690");
             client.setCreatedAt(LocalDate.now());
 
             // Inserindo cliente no banco de dados

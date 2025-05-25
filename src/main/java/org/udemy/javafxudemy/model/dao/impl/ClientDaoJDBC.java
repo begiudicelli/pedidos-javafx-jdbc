@@ -25,8 +25,8 @@ public class ClientDaoJDBC implements ClientDao {
         PreparedStatement st = null;
         ResultSet rs = null;
         String query = "INSERT INTO client " +
-                "(name, phone, email, address, cpf, created_at) " +
-                "VALUES (?, ?, ?, ?, ?, ?)";
+                "(name, phone, email, address, cpf) " +
+                "VALUES (?, ?, ?, ?, ?)";
 
         try{
             st = conn.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
@@ -35,7 +35,6 @@ public class ClientDaoJDBC implements ClientDao {
             st.setString(3, client.getEmail());
             st.setString(4, client.getAddress());
             st.setString(5, client.getCpf());
-            st.setDate(6, java.sql.Date.valueOf(client.getCreatedAt()));
 
             int rowsAffected = st.executeUpdate();
 

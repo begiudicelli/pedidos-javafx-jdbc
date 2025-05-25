@@ -25,15 +25,14 @@ public class ProductDaoJDBC implements ProductDao {
         PreparedStatement st = null;
         ResultSet rs = null;
         String query = "INSERT INTO product " +
-                        "(product_name, unit_price, is_active, created_at) " +
-                        "VALUES (?, ?, ?, ?)";
+                        "(product_name, unit_price, is_active) " +
+                        "VALUES (?, ?, ?)";
 
         try{
             st = conn.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
             st.setString(1, obj.getName());
             st.setDouble(2, obj.getUnitPrice());
             st.setBoolean(3, obj.getIsActive());
-            st.setDate(4, java.sql.Date.valueOf(obj.getCreatedAt()));
 
             int rowsAffected = st.executeUpdate();
 
