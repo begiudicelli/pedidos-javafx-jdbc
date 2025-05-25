@@ -58,7 +58,27 @@ public class ClientDaoJDBC implements ClientDao {
 
     @Override
     public void update(Client client) {
+        PreparedStatement st = null;
+        String query = "UPDATE client " +
+                "SET name = ?, phone = ?, email = ? , address= ? , cpf = ?" +
+                "WHERE id_client = ?";
 
+        try {
+            st = conn.prepareStatement(query);
+            st.setString(1, client.getName());
+            st.setString(2, client.getPhone());
+            st.setString(3, client.getEmail());
+            st.setString(4, client.getAddress());
+            st.setString(5, client.getCpf());
+            st.setInt(6, client.getId());
+
+            st.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new DbException(e.getMessage());
+        } finally {
+            DB.closeStatement(st);
+        }
     }
 
     @Override

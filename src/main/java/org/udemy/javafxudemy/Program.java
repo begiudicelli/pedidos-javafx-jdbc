@@ -16,32 +16,26 @@ public class Program {
             conn = DB.getConnection();
             ClientDao clientDao = new ClientDaoJDBC(conn);
 
-            // Criando e configurando o cliente
-            Client client = new Client();
-            client.setName("Rafael Giudicelli");
-            client.setPhone("31975295276");
-            client.setEmail("rafael@gmail.com");
-            client.setAddress("Rua da maldade 1200");
-            client.setCpf("13051818690");
-            client.setCreatedAt(LocalDate.now());
+            // Buscar um cliente existente
+            Client client = clientDao.findById(8); // Atualize com o ID que você sabe que existe
 
-            // Inserindo cliente no banco de dados
-            clientDao.insert(client);
+            if (client != null) {
+                System.out.println("Cliente original: " + client);
 
-            // Buscando o cliente pelo ID gerado
-            Client insertedClient = clientDao.findById(client.getId());
+                // Atualizar os dados do cliente
+                client.setName("Nome Atualizado");
+                client.setPhone("31999999999");
+                client.setEmail("atualizado@email.com");
+                client.setAddress("Rua Atualizada 999");
+                client.setCpf("99999999999");
 
-            if (insertedClient != null) {
-                System.out.println("Cliente inserido com sucesso:");
-                System.out.println("ID: " + insertedClient.getId());
-                System.out.println("Nome: " + insertedClient.getName());
-                System.out.println("Email: " + insertedClient.getEmail());
-                System.out.println("Telefone: " + insertedClient.getPhone());
-                System.out.println("Endereço: " + insertedClient.getAddress());
-                System.out.println("CPF: " + insertedClient.getCpf());
-                System.out.println("Data de criação: " + insertedClient.getCreatedAt());
+                // Executar o update
+                clientDao.update(client);
+
+                System.out.println("Cliente atualizado com sucesso!");
+                System.out.println("Dados atualizados: " + client);
             } else {
-                System.out.println("Erro: Cliente não foi encontrado após inserção.");
+                System.out.println("Cliente com ID informado não encontrado.");
             }
 
         } catch (Exception e) {
