@@ -1,5 +1,6 @@
 package org.udemy.javafxudemy.gui.controllers;
 
+import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -7,10 +8,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.Pane;
 import javafx.stage.Modality;
@@ -39,6 +37,7 @@ public class ProductListController implements Initializable, DataChangeListener 
     @FXML private TableColumn<Product, Double> tableColumnPrice;
     @FXML private TableColumn<Product, Boolean> tableColumnIsActive;
     @FXML private TableColumn<Product, LocalDate> tableColumnDateCreated;
+    @FXML private TableColumn<Product, Product> tableColumnEDIT;
 
     @FXML
     private Button btNewProduct;
@@ -61,6 +60,28 @@ public class ProductListController implements Initializable, DataChangeListener 
         this.productService = productService;
     }
 
+    private void initEditButtons() {
+        tableColumnEDIT.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue()));
+        tableColumnEDIT.setCellFactory(param -> new TableCell<Product, Product>() {
+            private final Button button = new Button("edit");
+
+            @Override
+            protected void updateItem(Product product, boolean empty) {
+                super.updateItem(product, empty);
+
+                if (product == null) {
+                    setGraphic(null);
+                    return;
+                }
+
+                setGraphic(button);
+                button.setOnAction(
+                        event -> createDialogForm(
+                                product, "/org/udemy/javafxudemy/ProductForm.fxml",Utils.currentStage(event)));
+            }
+        });
+    }
+
     private void initializeNodes(){
         tableColumnId.setCellValueFactory(new PropertyValueFactory<>("id"));
         tableColumnName.setCellValueFactory(new PropertyValueFactory<>("name"));
@@ -78,6 +99,7 @@ public class ProductListController implements Initializable, DataChangeListener 
         List<Product> list = productService.findAll();
         obsList = FXCollections.observableArrayList(list);
         tableViewProduct.setItems(obsList);
+        initEditButtons();
     }
 
     private void createDialogForm(Product product, String absolutePath, Stage parentStage){

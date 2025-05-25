@@ -68,8 +68,8 @@ public class ProductFormController implements Initializable {
         if(txtName.getText() == null || txtName.getText().isBlank()){
             exception.addError("name", "Field cant be empty");
         }
-
         product.setName(txtName.getText());
+
         product.setUnitPrice(Utils.tryParseToDouble(txtPrice.getText()));
 
         product.setIsActive(true);
