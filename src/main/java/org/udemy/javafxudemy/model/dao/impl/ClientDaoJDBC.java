@@ -4,7 +4,6 @@ import org.udemy.javafxudemy.db.DB;
 import org.udemy.javafxudemy.db.DbException;
 import org.udemy.javafxudemy.model.dao.ClientDao;
 import org.udemy.javafxudemy.model.entities.Client;
-import org.udemy.javafxudemy.model.entities.Product;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -83,7 +82,23 @@ public class ClientDaoJDBC implements ClientDao {
 
     @Override
     public void deleteById(Integer id) {
+        PreparedStatement st = null;
+        String query = "DELETE FROM client WHERE id_client = ?";
 
+        try {
+            st = conn.prepareStatement(query);
+            st.setInt(1, id);
+
+            int rowsAffected = st.executeUpdate();
+
+            if (rowsAffected == 0) {
+                throw new DbException("No client found with the given ID: " + id);
+            }
+        } catch (SQLException e) {
+            throw new DbException(e.getMessage());
+        } finally {
+            DB.closeStatement(st);
+        }
     }
 
     @Override
