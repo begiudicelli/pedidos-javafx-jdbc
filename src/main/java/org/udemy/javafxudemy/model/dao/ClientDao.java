@@ -9,5 +9,6 @@ public interface ClientDao {
     void update(Client client);
     void deleteById(Integer id);
     Client findById(Integer id);
+    List<Client> findByName(Client client);
     List<Client> findAll();
 }

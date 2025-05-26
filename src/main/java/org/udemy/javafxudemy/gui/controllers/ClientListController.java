@@ -7,9 +7,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.TableColumn;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.Pane;
 import javafx.stage.Modality;
@@ -20,8 +18,6 @@ import org.udemy.javafxudemy.gui.util.Alerts;
 import org.udemy.javafxudemy.gui.util.Utils;
 import org.udemy.javafxudemy.model.entities.Client;
 import org.udemy.javafxudemy.model.services.ClientService;
-
-import javafx.scene.control.TableView;
 
 import java.io.IOException;
 import java.net.URL;
@@ -42,6 +38,9 @@ public class ClientListController implements Initializable, DataChangeListener {
     @FXML private TableColumn<Client, LocalDateTime> tableColumnDateCreated;
 
     @FXML private Button btNewClient;
+    @FXML private Button btSearchClient;
+
+    @FXML private TextField txtSearchName;
 
     private ObservableList<Client> obsList;
 
@@ -52,12 +51,34 @@ public class ClientListController implements Initializable, DataChangeListener {
         createDialogForm(client, "/org/udemy/javafxudemy/ClientFormView.fxml", parentStage);
     }
 
+    @FXML
+    public void onBtSearchClientAction(ActionEvent event) {
+        String name = txtSearchName.getText().trim();
+
+        if (!name.isEmpty()) {
+            try {
+                Client searchClient = new Client();
+                searchClient.setName(name);
+                List<Client> foundClients = clientService.findByName(searchClient);
+
+                if (foundClients.isEmpty()) {
+                    Alerts.showAlert("No results", null, "No clients found with name: " + name, Alert.AlertType.INFORMATION);
+                } else {
+                    obsList = FXCollections.observableArrayList(foundClients);
+                    tableViewClient.setItems(obsList);
+                }
+            } catch (Exception e) {
+                Alerts.showAlert("Error", "Search error", e.getMessage(), Alert.AlertType.ERROR);
+            }
+        } else {
+            updateTableView();
+        }
+    }
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         initializeNodes();
     }
-
-
 
     private void initializeNodes(){
         tableColumnId.setCellValueFactory(new PropertyValueFactory<>("id"));

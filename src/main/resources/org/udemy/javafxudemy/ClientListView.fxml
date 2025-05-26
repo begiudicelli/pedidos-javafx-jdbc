@@ -5,9 +5,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="633.0" prefWidth="1054.0"
-      xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="org.udemy.javafxudemy.gui.controllers.ClientListController">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="633.0" prefWidth="1054.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.udemy.javafxudemy.gui.controllers.ClientListController">
     <children>
         <Label text="Client Registration">
             <font>
@@ -24,8 +22,8 @@
         </ToolBar>
       <HBox prefHeight="20.0" prefWidth="600.0" spacing="250.0">
          <children>
-            <TextField prefHeight="25.0" prefWidth="260.0" />
-            <Button mnemonicParsing="false" text="Search" />
+            <TextField fx:id="txtSearchName" prefHeight="25.0" prefWidth="260.0" promptText="Search for client" />
+            <Button fx:id="btSearchClient" mnemonicParsing="false" onAction="#onBtSearchClientAction" text="Search" />
          </children>
          <padding>
             <Insets bottom="5.0" top="5.0" />

@@ -129,6 +129,35 @@ public class ClientDaoJDBC implements ClientDao {
     }
 
     @Override
+    public List<Client> findByName(Client client){
+        PreparedStatement st = null;
+        ResultSet rs = null;
+        String query = "SELECT * FROM client WHERE name LIKE ? ORDER BY name";
+
+        try{
+            st = conn.prepareStatement(query);
+            st.setString(1, "%" + client.getName() + "%");
+            rs = st.executeQuery();
+
+            List<Client> clients = new ArrayList<>();
+
+            while(rs.next()){
+                Client newClient = instantiateClient(rs);
+                clients.add(newClient);
+            }
+
+            return clients;
+        } catch(SQLException e){
+            throw new DbException(e.getMessage());
+        } finally {
+            DB.closeStatement(st);
+            DB.closeResultSet(rs);
+        }
+    }
+
+
+
+    @Override
     public List<Client> findAll() {
         PreparedStatement st = null;
         ResultSet rs = null;
@@ -153,6 +182,7 @@ public class ClientDaoJDBC implements ClientDao {
             DB.closeResultSet(rs);
         }
     }
+
 
 
     private Client instantiateClient(ResultSet rs) throws SQLException {

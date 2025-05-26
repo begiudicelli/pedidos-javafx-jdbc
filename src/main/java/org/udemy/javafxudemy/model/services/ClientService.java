@@ -25,4 +25,8 @@ public class ClientService {
     public void remove(Client client){
         dao.deleteById(client.getId());
     }
+
+    public List<Client> findByName(Client client){
+        return dao.findByName(client);
+    }
 }
