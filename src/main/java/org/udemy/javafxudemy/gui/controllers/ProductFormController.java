@@ -17,7 +17,6 @@ import org.udemy.javafxudemy.gui.util.Constraints;
 import org.udemy.javafxudemy.gui.util.Utils;
 
 import java.net.URL;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -39,6 +38,10 @@ public class ProductFormController implements Initializable {
     @FXML private Button btnSave;
     @FXML private Button btnCancel;
 
+    @FXML
+    public void onBtnCancelAction(ActionEvent event){
+        Utils.currentStage(event).close();
+    }
 
     @FXML
     public void onBtnSaveAction(ActionEvent event){
@@ -83,12 +86,6 @@ public class ProductFormController implements Initializable {
         return product;
     }
 
-    @FXML
-    public void onBtnCancelAction(ActionEvent event){
-        Utils.currentStage(event).close();
-    }
-
-
     public void updateFormData(){
         if(product == null) throw new IllegalStateException("Product was null");
         txtId.setText(String.valueOf(product.getId()));
@@ -116,6 +113,8 @@ public class ProductFormController implements Initializable {
             labelErrorName.setText(errors.get("name"));
         }
     }
+
+
 
     public void subscribeDataChangeListener(DataChangeListener listener){
         dataChangeListeners.add(listener);

@@ -19,11 +19,9 @@ import org.udemy.javafxudemy.gui.listeners.DataChangeListener;
 import org.udemy.javafxudemy.gui.util.Alerts;
 import org.udemy.javafxudemy.gui.util.Utils;
 import org.udemy.javafxudemy.model.entities.Client;
-import org.udemy.javafxudemy.model.entities.Product;
 import org.udemy.javafxudemy.model.services.ClientService;
 
 import javafx.scene.control.TableView;
-import org.udemy.javafxudemy.model.services.ProductService;
 
 import java.io.IOException;
 import java.net.URL;
@@ -59,6 +57,31 @@ public class ClientListController implements Initializable, DataChangeListener {
         initializeNodes();
     }
 
+
+
+    private void initializeNodes(){
+        tableColumnId.setCellValueFactory(new PropertyValueFactory<>("id"));
+        tableColumnName.setCellValueFactory(new PropertyValueFactory<>("name"));
+        tableColumnPhone.setCellValueFactory(new PropertyValueFactory<>("phone"));
+        tableColumnEmail.setCellValueFactory(new PropertyValueFactory<>("email"));
+        tableColumnAddress.setCellValueFactory(new PropertyValueFactory<>("address"));
+        tableColumnCpf.setCellValueFactory(new PropertyValueFactory<>("cpf"));
+        tableColumnDateCreated.setCellValueFactory(new PropertyValueFactory<>("createdAt"));
+
+        Stage stage = (Stage) Main.getMainScene().getWindow();
+        tableViewClient.prefHeightProperty().bind(stage.heightProperty());
+    }
+
+    public void updateTableView(){
+        if(clientService == null) throw new IllegalStateException("Service was null.");
+
+        List<Client> list = clientService.findAll();
+        System.out.println("Found " + list.size() + " clients");
+        obsList = FXCollections.observableArrayList(list);
+        tableViewClient.setItems(obsList);
+        //initEditButtons();
+        //initRemoveButtons();
+    }
     private void createDialogForm(Client client, String absolutePath, Stage parentStage){
         try{
             FXMLLoader loader = new FXMLLoader(getClass().getResource(absolutePath));
@@ -68,7 +91,7 @@ public class ClientListController implements Initializable, DataChangeListener {
             controller.setClient(client);
             controller.setClientService(new ClientService());
             controller.subscribeDataChangeListener(this);
-            //controller.updateFormData();
+            controller.updateFormData();
 
             Stage dialogStage = new Stage();
             dialogStage.setTitle("Enter Client data.");
@@ -80,29 +103,6 @@ public class ClientListController implements Initializable, DataChangeListener {
         } catch (IOException e) {
             Alerts.showAlert("IO Exception", "Error loading view", e.getMessage(), Alert.AlertType.ERROR);
         }
-    }
-
-
-    private void initializeNodes(){
-        tableColumnId.setCellValueFactory(new PropertyValueFactory<>("id"));
-        tableColumnName.setCellValueFactory(new PropertyValueFactory<>("name"));
-        tableColumnPhone.setCellValueFactory(new PropertyValueFactory<>("phone"));
-        tableColumnAddress.setCellValueFactory(new PropertyValueFactory<>("address"));
-        tableColumnEmail.setCellValueFactory(new PropertyValueFactory<>("email"));
-        tableColumnDateCreated.setCellValueFactory(new PropertyValueFactory<>("createdAt"));
-
-        Stage stage = (Stage) Main.getMainScene().getWindow();
-        tableViewClient.prefHeightProperty().bind(stage.heightProperty());
-    }
-
-    public void updateTableView(){
-        if(clientService == null) throw new IllegalStateException("Service was null.");
-
-        List<Client> list = clientService.findAll();
-        obsList = FXCollections.observableArrayList(list);
-        tableViewClient.setItems(obsList);
-        //initEditButtons();
-        //initRemoveButtons();
     }
 
     @Override

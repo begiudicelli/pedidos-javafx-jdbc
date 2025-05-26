@@ -51,7 +51,7 @@ public class ProductListController implements Initializable, DataChangeListener 
     public void onBtNewProductAction(ActionEvent event){
         Stage parentStage = Utils.currentStage(event);
         Product product = new Product();
-        createDialogForm(product, "/org/udemy/javafxudemy/ProductForm.fxml", parentStage);
+        createDialogForm(product, "/org/udemy/javafxudemy/ProductFormView.fxml", parentStage);
     }
 
     @Override
@@ -59,9 +59,6 @@ public class ProductListController implements Initializable, DataChangeListener 
         initializeNodes();
     }
 
-    public void setProductService(ProductService productService){
-        this.productService = productService;
-    }
 
     private void initEditButtons() {
         tableColumnEDIT.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue()));
@@ -80,7 +77,7 @@ public class ProductListController implements Initializable, DataChangeListener 
                 setGraphic(button);
                 button.setOnAction(
                         event -> createDialogForm(
-                                product, "/org/udemy/javafxudemy/ProductForm.fxml",Utils.currentStage(event)));
+                                product, "/org/udemy/javafxudemy/ProductFormView.fxml",Utils.currentStage(event)));
             }
         });
     }
@@ -163,6 +160,10 @@ public class ProductListController implements Initializable, DataChangeListener 
         } catch (IOException e) {
             Alerts.showAlert("IO Exception", "Error loading view", e.getMessage(), Alert.AlertType.ERROR);
         }
+    }
+
+    public void setProductService(ProductService productService){
+        this.productService = productService;
     }
 
     @Override

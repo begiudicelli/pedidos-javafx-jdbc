@@ -11,6 +11,7 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.VBox;
 import org.udemy.javafxudemy.Main;
 import org.udemy.javafxudemy.model.entities.Client;
+import org.udemy.javafxudemy.model.services.ClientService;
 import org.udemy.javafxudemy.model.services.ProductService;
 import org.udemy.javafxudemy.gui.util.Alerts;
 
@@ -33,7 +34,8 @@ public class MainViewController implements Initializable {
     @FXML
     public void onMenuItemClientAction(){
         loadView("/org/udemy/javafxudemy/ClientListView.fxml", (ClientListController controller)->{
-
+            controller.setClientService(new ClientService());
+            controller.updateTableView();
         });
     }
 

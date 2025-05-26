@@ -2,7 +2,6 @@ package org.udemy.javafxudemy.model.entities;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
