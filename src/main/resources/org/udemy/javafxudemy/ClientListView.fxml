@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="633.0" prefWidth="1054.0"
+      xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="org.udemy.javafxudemy.gui.controllers.ClientListController">
+    <children>
+        <Label text="Client Registration">
+            <font>
+                <Font name="System Bold" size="14.0" />
+            </font>
+            <padding>
+                <Insets left="5.0" top="5.0" />
+            </padding>
+        </Label>
+        <ToolBar prefHeight="40.0" prefWidth="200.0">
+            <items>
+                <Button fx:id="btNewClient" mnemonicParsing="false" onAction="#onBtNewClientAction" text="New" />
+            </items>
+        </ToolBar>
+      <HBox prefHeight="20.0" prefWidth="600.0" spacing="250.0">
+         <children>
+            <TextField prefHeight="25.0" prefWidth="260.0" />
+            <Button mnemonicParsing="false" text="Search" />
+         </children>
+         <padding>
+            <Insets bottom="5.0" top="5.0" />
+         </padding>
+      </HBox>
+        <TableView fx:id="tableViewClient" prefHeight="200.0" prefWidth="200.0">
+            <columns>
+                <TableColumn fx:id="tableColumnId" prefWidth="30.0" text="ID" />
+                <TableColumn fx:id="tableColumnName" prefWidth="174.0" text="Name" />
+                <TableColumn fx:id="tableColumnPhone" prefWidth="159.0" text="Phone" />
+                <TableColumn fx:id="tableColumnEmail" prefWidth="172.0" text="Email" />
+                <TableColumn fx:id="tableColumnAddress" minWidth="0.0" prefWidth="197.0" text="Address" />
+                <TableColumn fx:id="tableColumnCpf" minWidth="0.0" prefWidth="162.0" text="CPF" />
+                <TableColumn fx:id="tableColumnDateCreated" prefWidth="119.0" text="Date Created" />
+            </columns>
+        </TableView>
+    </children>
+</VBox>
