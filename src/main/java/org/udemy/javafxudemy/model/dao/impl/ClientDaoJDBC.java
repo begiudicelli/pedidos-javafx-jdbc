@@ -4,11 +4,13 @@ import org.udemy.javafxudemy.db.DB;
 import org.udemy.javafxudemy.db.DbException;
 import org.udemy.javafxudemy.model.dao.ClientDao;
 import org.udemy.javafxudemy.model.entities.Client;
+import org.udemy.javafxudemy.model.entities.Product;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ClientDaoJDBC implements ClientDao {
@@ -128,7 +130,28 @@ public class ClientDaoJDBC implements ClientDao {
 
     @Override
     public List<Client> findAll() {
-        return List.of();
+        PreparedStatement st = null;
+        ResultSet rs = null;
+        String query = "SELECT * FROM client";
+        try{
+            st = conn.prepareStatement(query);
+            rs = st.executeQuery();
+
+            List<Client> clienteList = new ArrayList<>();
+
+            while(rs.next()){
+                Client client = instantiateClient(rs);
+                clienteList.add(client);
+            }
+
+            return clienteList;
+        } catch (SQLException e) {
+            throw new DbException(e.getMessage());
+        }
+        finally {
+            DB.closeStatement(st);
+            DB.closeResultSet(rs);
+        }
     }
 
 
