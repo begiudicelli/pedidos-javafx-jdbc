@@ -1,5 +1,6 @@
 package org.udemy.javafxudemy.gui.controllers;
 
+import javafx.event.ActionEvent;
 import org.udemy.javafxudemy.gui.listeners.DataChangeListener;
 import org.udemy.javafxudemy.model.entities.Client;
 import org.udemy.javafxudemy.model.services.ClientService;
@@ -16,6 +17,11 @@ public class ClientFormController {
 
 
 
+    public void onBtnSaveAction(ActionEvent event) {
+    }
+
+    public void onBtnCancelAction(ActionEvent event) {
+    }
 
 
     public void subscribeDataChangeListener(DataChangeListener listener){
@@ -35,4 +41,5 @@ public class ClientFormController {
     public void setClientService(ClientService clientService){
         this.clientService = clientService;
     }
+
 }
