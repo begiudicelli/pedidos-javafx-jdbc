@@ -22,14 +22,13 @@ import java.util.function.Consumer;
 
 public class MainViewController implements Initializable {
 
-    @FXML
-    private MenuItem menuItemClient;
+    @FXML private MenuItem menuItemClient;
+    @FXML private MenuItem menuItemProduct;
+    @FXML private MenuItem menuItemAbout;
+    @FXML private MenuItem menuItemOrder;
 
-    @FXML
-    private MenuItem menuItemProduct;
 
-    @FXML
-    private MenuItem menuItemAbout;
+
 
     @FXML
     public void onMenuItemClientAction(){
@@ -46,6 +45,14 @@ public class MainViewController implements Initializable {
             controller.updateTableView();
         });
     }
+
+    @FXML
+    public void onMenuItemOrderAction(){
+        loadView("/org/udemy/javafxudemy/OrderView.fxml", (x )->{});
+    }
+
+
+
     @FXML
     public void onMenuItemAboutAction(){
         loadView("/org/udemy/javafxudemy/AboutView.fxml", x -> {});
