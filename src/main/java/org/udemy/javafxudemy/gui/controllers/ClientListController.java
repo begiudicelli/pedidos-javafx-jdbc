@@ -1,5 +1,6 @@
 package org.udemy.javafxudemy.gui.controllers;
 
+import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -13,16 +14,19 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.udemy.javafxudemy.Main;
+import org.udemy.javafxudemy.db.DbException;
 import org.udemy.javafxudemy.gui.listeners.DataChangeListener;
 import org.udemy.javafxudemy.gui.util.Alerts;
 import org.udemy.javafxudemy.gui.util.Utils;
 import org.udemy.javafxudemy.model.entities.Client;
+import org.udemy.javafxudemy.model.entities.Product;
 import org.udemy.javafxudemy.model.services.ClientService;
 
 import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class ClientListController implements Initializable, DataChangeListener {
@@ -36,6 +40,8 @@ public class ClientListController implements Initializable, DataChangeListener {
     @FXML private TableColumn<Client, String> tableColumnAddress;
     @FXML private TableColumn<Client, String> tableColumnCpf;
     @FXML private TableColumn<Client, LocalDateTime> tableColumnDateCreated;
+    @FXML private TableColumn<Client, Client> tableColumnEDIT;
+    @FXML private TableColumn<Client, Client> tableColumnREMOVE;
 
     @FXML private Button btNewClient;
     @FXML private Button btSearchClient;
@@ -100,8 +106,8 @@ public class ClientListController implements Initializable, DataChangeListener {
         System.out.println("Found " + list.size() + " clients");
         obsList = FXCollections.observableArrayList(list);
         tableViewClient.setItems(obsList);
-        //initEditButtons();
-        //initRemoveButtons();
+        initEditButtons();
+        initRemoveButtons();
     }
     private void createDialogForm(Client client, String absolutePath, Stage parentStage){
         try{
@@ -123,6 +129,64 @@ public class ClientListController implements Initializable, DataChangeListener {
             dialogStage.showAndWait();
         } catch (IOException e) {
             Alerts.showAlert("IO Exception", "Error loading view", e.getMessage(), Alert.AlertType.ERROR);
+        }
+    }
+
+    private void initEditButtons() {
+        tableColumnEDIT.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue()));
+        tableColumnEDIT.setCellFactory(param -> new TableCell<Client, Client>() {
+            private final Button button = new Button("edit");
+
+            @Override
+            protected void updateItem(Client client, boolean empty) {
+                super.updateItem(client, empty);
+
+                if (client == null) {
+                    setGraphic(null);
+                    return;
+                }
+
+                setGraphic(button);
+                button.setOnAction(
+                        event -> createDialogForm(
+                                client, "/org/udemy/javafxudemy/ClientFormView.fxml",Utils.currentStage(event)));
+            }
+        });
+    }
+
+    private void initRemoveButtons() {
+        tableColumnREMOVE.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue()));
+        tableColumnREMOVE.setCellFactory(param -> new TableCell<Client, Client>() {
+            private final Button button = new Button("remove");
+
+            @Override
+            protected void updateItem(Client client, boolean empty) {
+                super.updateItem(client, empty);
+
+                if (client == null) {
+                    setGraphic(null);
+                    return;
+                }
+
+                setGraphic(button);
+                button.setOnAction(event -> removeEntity(client));
+            }
+        });
+    }
+
+    private void removeEntity(Client client){
+        Optional<ButtonType> result = Alerts.showConfirmation("Confirmation", "Are you sure to delete?");
+
+        if(result.get() == ButtonType.OK){
+            if(clientService == null ) throw new IllegalStateException("Service was null");
+
+            try{
+                clientService.remove(client);
+                updateTableView();
+            }catch(DbException e){
+                Alerts.showAlert("Error removing client", null, e.getMessage(), Alert.AlertType.ERROR);
+            }
+
         }
     }
 
