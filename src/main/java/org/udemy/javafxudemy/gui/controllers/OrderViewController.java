@@ -13,7 +13,9 @@ import org.udemy.javafxudemy.Main;
 import org.udemy.javafxudemy.gui.listeners.DataChangeListener;
 import org.udemy.javafxudemy.gui.util.Alerts;
 import org.udemy.javafxudemy.model.entities.Client;
+import org.udemy.javafxudemy.model.entities.Product;
 import org.udemy.javafxudemy.model.services.ClientService;
+import org.udemy.javafxudemy.model.services.ProductService;
 
 import java.net.URL;
 import java.util.List;
@@ -22,14 +24,16 @@ import java.util.ResourceBundle;
 public class OrderViewController implements Initializable, DataChangeListener {
 
     private ClientService clientService;
+    private ProductService productService = new ProductService();
 
+    //Clients
     @FXML private TableView<Client> tableViewClient;
-    @FXML private TableColumn<Client, Integer> tableColumnId;
-    @FXML private TableColumn<Client, String> tableColumnName;
-    @FXML private TableColumn<Client, String> tableColumnPhone;
-    @FXML private TableColumn<Client, String> tableColumnEmail;
-    @FXML private TableColumn<Client, String> tableColumnAddress;
-    @FXML private TableColumn<Client, String> tableColumnCpf;
+    @FXML private TableColumn<Client, Integer> tableColumnClientId;
+    @FXML private TableColumn<Client, String> tableColumnClientName;
+    @FXML private TableColumn<Client, String> tableColumnClientPhone;
+    @FXML private TableColumn<Client, String> tableColumnClientEmail;
+    @FXML private TableColumn<Client, String> tableColumnClientAddress;
+    @FXML private TableColumn<Client, String> tableColumnClientCpf;
 
     @FXML private TextField txtClientSearch;
     @FXML private Button btSearchClient;
@@ -38,7 +42,16 @@ public class OrderViewController implements Initializable, DataChangeListener {
     @FXML private Label lblClientEmail;
     @FXML private Label lblClientPhone;
 
-    private ObservableList<Client> obsList;
+    private ObservableList<Client> clientObsList;
+
+    //Products list
+    @FXML private TableView<Product> tableViewProducts;
+    @FXML private TableColumn<Product, Integer> tableColumnProductId;
+    @FXML private TableColumn<Product, Integer> tableColumnProductName;
+    @FXML private TableColumn<Product, Integer> tableColumnProductPrice;
+
+    private ObservableList<Product> productObsList;
+
 
     @FXML
     public void onBtSearchClientAction(ActionEvent event) {
@@ -53,8 +66,8 @@ public class OrderViewController implements Initializable, DataChangeListener {
                 if (foundClients.isEmpty()) {
                     Alerts.showAlert("No results", null, "No clients found with name: " + name, Alert.AlertType.INFORMATION);
                 } else {
-                    obsList = FXCollections.observableArrayList(foundClients);
-                    tableViewClient.setItems(obsList);
+                    clientObsList = FXCollections.observableArrayList(foundClients);
+                    tableViewClient.setItems(clientObsList);
                 }
             } catch (Exception e) {
                 Alerts.showAlert("Error", "Search error", e.getMessage(), Alert.AlertType.ERROR);
@@ -89,23 +102,32 @@ public class OrderViewController implements Initializable, DataChangeListener {
 
 
     private void initializeNodes(){
-        tableColumnId.setCellValueFactory(new PropertyValueFactory<>("id"));
-        tableColumnName.setCellValueFactory(new PropertyValueFactory<>("name"));
-        tableColumnPhone.setCellValueFactory(new PropertyValueFactory<>("phone"));
-        tableColumnEmail.setCellValueFactory(new PropertyValueFactory<>("email"));
-        tableColumnAddress.setCellValueFactory(new PropertyValueFactory<>("address"));
-        tableColumnCpf.setCellValueFactory(new PropertyValueFactory<>("cpf"));
+        tableColumnClientId.setCellValueFactory(new PropertyValueFactory<>("id"));
+        tableColumnClientName.setCellValueFactory(new PropertyValueFactory<>("name"));
+        tableColumnClientPhone.setCellValueFactory(new PropertyValueFactory<>("phone"));
+        tableColumnClientEmail.setCellValueFactory(new PropertyValueFactory<>("email"));
+        tableColumnClientAddress.setCellValueFactory(new PropertyValueFactory<>("address"));
+        tableColumnClientCpf.setCellValueFactory(new PropertyValueFactory<>("cpf"));
 
         Stage stage = (Stage) Main.getMainScene().getWindow();
         tableViewClient.prefHeightProperty().bind(stage.heightProperty());
+
+        tableColumnProductId.setCellValueFactory(new PropertyValueFactory<>("id"));
+        tableColumnProductName.setCellValueFactory(new PropertyValueFactory<>("name"));
+        tableColumnProductPrice.setCellValueFactory(new PropertyValueFactory<>("unitPrice"));
     }
 
     public void updateTableView(){
         if(clientService == null) throw new IllegalStateException("Service was null.");
 
-        List<Client> list = clientService.findAll();
-        obsList = FXCollections.observableArrayList(list);
-        tableViewClient.setItems(obsList);
+        List<Client> clientList = clientService.findAll();
+        clientObsList = FXCollections.observableArrayList(clientList);
+        tableViewClient.setItems(clientObsList);
+
+
+        List<Product> productList = productService.findAll();
+        productObsList = FXCollections.observableArrayList(productList);
+        tableViewProducts.setItems(productObsList);
     }
 
     @Override
