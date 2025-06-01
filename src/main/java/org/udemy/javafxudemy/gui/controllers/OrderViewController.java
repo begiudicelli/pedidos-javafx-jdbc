@@ -7,6 +7,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import org.udemy.javafxudemy.Main;
 import org.udemy.javafxudemy.gui.listeners.DataChangeListener;
@@ -32,6 +33,10 @@ public class OrderViewController implements Initializable, DataChangeListener {
 
     @FXML private TextField txtClientSearch;
     @FXML private Button btSearchClient;
+
+    @FXML private Label lblClientName;
+    @FXML private Label lblClientEmail;
+    @FXML private Label lblClientPhone;
 
     private ObservableList<Client> obsList;
 
@@ -59,11 +64,28 @@ public class OrderViewController implements Initializable, DataChangeListener {
         }
     }
 
+    @FXML
+    private void handleClientSelection(MouseEvent event) {
+        if (event.getClickCount() == 1) {
+            Client selected = tableViewClient.getSelectionModel().getSelectedItem();
+            if (selected != null) {
+                loadClientData(selected);
+            }
+        }
+    }
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         initializeNodes();
     }
 
+    private void loadClientData(Client client) {
+        lblClientName.setText(client.getName());
+        lblClientEmail.setText(client.getEmail());
+        lblClientPhone.setText(client.getPhone());
+
+        //disableFormFields();
+    }
 
 
     private void initializeNodes(){

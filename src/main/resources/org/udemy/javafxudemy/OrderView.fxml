@@ -28,7 +28,7 @@
                 <TextField fx:id="txtClientSearch" promptText="Digite o nome do cliente..." HBox.hgrow="ALWAYS" />
                 <Button fx:id="btSearchClient" text="Procurar" onAction="#onBtSearchClientAction" />
             </HBox>
-         <TableView fx:id="tableViewClient" prefHeight="299.0" prefWidth="384.0">
+         <TableView fx:id="tableViewClient" onMouseClicked="#handleClientSelection" prefHeight="299.0" prefWidth="384.0">
            <columns>
              <TableColumn fx:id="tableColumnId" prefWidth="42.0" text="ID" />
              <TableColumn fx:id="tableColumnName" prefWidth="90.0" text="Name" />
