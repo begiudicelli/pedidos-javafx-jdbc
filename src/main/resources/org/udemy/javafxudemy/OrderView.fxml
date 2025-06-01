@@ -26,16 +26,16 @@
             <Label text="Buscar Cliente:" />
             <HBox spacing="10">
                 <TextField fx:id="txtClientSearch" promptText="Digite o nome do cliente..." HBox.hgrow="ALWAYS" />
-                <Button fx:id="btnSearchClient" text="Procurar" />
+                <Button fx:id="btSearchClient" text="Procurar" onAction="#onBtSearchClientAction" />
             </HBox>
-         <TableView prefHeight="299.0" prefWidth="384.0">
+         <TableView fx:id="tableViewClient" prefHeight="299.0" prefWidth="384.0">
            <columns>
-             <TableColumn prefWidth="42.0" text="ID" />
-             <TableColumn prefWidth="90.0" text="Name" />
-               <TableColumn prefWidth="90.0" text="Phone" />
-               <TableColumn prefWidth="61.0" text="Email" />
-               <TableColumn prefWidth="90.0" text="Address" />
-               <TableColumn prefWidth="90.0" text="CPF" />
+             <TableColumn fx:id="tableColumnId" prefWidth="42.0" text="ID" />
+             <TableColumn fx:id="tableColumnName" prefWidth="90.0" text="Name" />
+               <TableColumn fx:id="tableColumnPhone" prefWidth="90.0" text="Phone" />
+               <TableColumn fx:id="tableColumnEmail" prefWidth="61.0" text="Email" />
+               <TableColumn fx:id="tableColumnAddress" prefWidth="90.0" text="Address" />
+               <TableColumn fx:id="tableColumnCpf" prefWidth="90.0" text="CPF" />
            </columns>
          </TableView>
 

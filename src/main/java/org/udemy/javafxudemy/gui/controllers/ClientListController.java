@@ -19,7 +19,6 @@ import org.udemy.javafxudemy.gui.listeners.DataChangeListener;
 import org.udemy.javafxudemy.gui.util.Alerts;
 import org.udemy.javafxudemy.gui.util.Utils;
 import org.udemy.javafxudemy.model.entities.Client;
-import org.udemy.javafxudemy.model.entities.Product;
 import org.udemy.javafxudemy.model.services.ClientService;
 
 import java.io.IOException;
@@ -103,7 +102,6 @@ public class ClientListController implements Initializable, DataChangeListener {
         if(clientService == null) throw new IllegalStateException("Service was null.");
 
         List<Client> list = clientService.findAll();
-        System.out.println("Found " + list.size() + " clients");
         obsList = FXCollections.observableArrayList(list);
         tableViewClient.setItems(obsList);
         initEditButtons();

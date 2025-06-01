@@ -48,9 +48,11 @@ public class MainViewController implements Initializable {
 
     @FXML
     public void onMenuItemOrderAction(){
-        loadView("/org/udemy/javafxudemy/OrderView.fxml", (x )->{});
+        loadView("/org/udemy/javafxudemy/OrderView.fxml", (OrderViewController controller)->{
+            controller.setClientService(new ClientService());
+            controller.updateTableView();
+        });
     }
-
 
 
     @FXML
