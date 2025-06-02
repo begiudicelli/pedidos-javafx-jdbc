@@ -1,6 +1,3 @@
--- Sales Database Schema - MySQL
--- Improved version with English field names and best practices
-
 CREATE TABLE Client (
     id_client SMALLINT AUTO_INCREMENT NOT NULL,
     name VARCHAR(100) NOT NULL,
@@ -12,13 +9,6 @@ CREATE TABLE Client (
     PRIMARY KEY (id_client),
     INDEX idx_cpf (cpf),
     INDEX idx_email (email)
-);
-
-CREATE TABLE PaymentMethod (
-    id_payment_method SMALLINT AUTO_INCREMENT NOT NULL,
-    method_name VARCHAR(50) NOT NULL UNIQUE,
-    is_active BOOLEAN DEFAULT TRUE,
-    PRIMARY KEY (id_payment_method)
 );
 
 CREATE TABLE Product (
@@ -37,8 +27,8 @@ CREATE TABLE SalesOrder (
     total_price DECIMAL(10, 2) NOT NULL,
     discount DECIMAL(8, 2) DEFAULT 0.00,
     id_client SMALLINT NOT NULL,
-    id_payment_method SMALLINT NOT NULL,
-    order_status ENUM('pending', 'confirmed', 'shipped', 'delivered', 'cancelled') DEFAULT 'pending',
+    payment_method ENUM('PIX', 'CASH', 'CREDIT', 'DEBIT'),
+    order_status ENUM('pending', 'confirmed', 'delivered', 'cancelled') DEFAULT 'pending',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (id_order),
     FOREIGN KEY (id_client) REFERENCES Client(id_client) ON DELETE RESTRICT,
@@ -60,14 +50,6 @@ CREATE TABLE SalesOrderDetail (
     UNIQUE KEY unique_order_product (id_order, id_product),
     INDEX idx_order (id_order)
 );
-
--- Insert Payment Methods
-INSERT INTO PaymentMethod (method_name) VALUES
-('PIX'),
-('Credit Card'),
-('Debit Card'),
-('Cash'),
-('Bank Transfer');
 
 -- Insert Sample Clients
 INSERT INTO Client (name, phone, email, address, cpf) VALUES

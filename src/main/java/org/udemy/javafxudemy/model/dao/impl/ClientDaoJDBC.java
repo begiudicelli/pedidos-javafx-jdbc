@@ -1,189 +1,164 @@
 package org.udemy.javafxudemy.model.dao.impl;
 
-import org.udemy.javafxudemy.db.DB;
 import org.udemy.javafxudemy.db.DbException;
 import org.udemy.javafxudemy.model.dao.ClientDao;
 import org.udemy.javafxudemy.model.entities.Client;
-import org.udemy.javafxudemy.model.entities.Product;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
+import java.sql.*;
+import java.util.*;
 
 public class ClientDaoJDBC implements ClientDao {
 
     private final Connection conn;
+    private final Map<Integer, Client> clientCache = new HashMap<>();
 
-    public ClientDaoJDBC(Connection conn){
+    public ClientDaoJDBC(Connection conn) {
         this.conn = conn;
     }
 
     @Override
     public void insert(Client client) {
-        PreparedStatement st = null;
-        ResultSet rs = null;
-        String query = "INSERT INTO client " +
-                "(name, phone, email, address, cpf) " +
-                "VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO client (name, phone, email, address, cpf) VALUES (?, ?, ?, ?, ?)";
 
-        try{
-            st = conn.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
-            st.setString(1, client.getName());
-            st.setString(2, client.getPhone());
-            st.setString(3, client.getEmail());
-            st.setString(4, client.getAddress());
-            st.setString(5, client.getCpf());
+        try (PreparedStatement st = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            setStatementParameters(st, client);
 
             int rowsAffected = st.executeUpdate();
+            if (rowsAffected == 0) {
+                throw new DbException("Insert failed: no rows affected.");
+            }
 
-            if(rowsAffected > 0){
-                rs = st.getGeneratedKeys();
-                if(rs.next()){
+            try (ResultSet rs = st.getGeneratedKeys()) {
+                if (rs.next()) {
                     int id = rs.getInt(1);
                     client.setId(id);
+                    clientCache.put(id, client);
                 }
-            }else{
-                throw new DbException("Unexpected error. No Line affected in client table.");
             }
         } catch (SQLException e) {
-            throw new DbException(e.getMessage());
-        }
-        finally {
-            DB.closeStatement(st);
-            DB.closeResultSet(rs);
+            throw new DbException("Error inserting client: " + e.getMessage(), e);
         }
     }
 
     @Override
     public void update(Client client) {
-        PreparedStatement st = null;
-        String query = "UPDATE client " +
-                "SET name = ?, phone = ?, email = ? , address= ? , cpf = ?" +
-                "WHERE id_client = ?";
+        String sql = "UPDATE client SET name = ?, phone = ?, email = ?, address = ?, cpf = ? WHERE id_client = ?";
 
-        try {
-            st = conn.prepareStatement(query);
-            st.setString(1, client.getName());
-            st.setString(2, client.getPhone());
-            st.setString(3, client.getEmail());
-            st.setString(4, client.getAddress());
-            st.setString(5, client.getCpf());
+        try (PreparedStatement st = conn.prepareStatement(sql)) {
+            setStatementParameters(st, client);
             st.setInt(6, client.getId());
-
             st.executeUpdate();
 
+            clientCache.put(client.getId(), client);
         } catch (SQLException e) {
-            throw new DbException(e.getMessage());
-        } finally {
-            DB.closeStatement(st);
+            throw new DbException("Error updating client: " + e.getMessage(), e);
         }
     }
 
     @Override
     public void deleteById(Integer id) {
-        PreparedStatement st = null;
-        String query = "DELETE FROM client WHERE id_client = ?";
+        String sql = "DELETE FROM client WHERE id_client = ?";
 
-        try {
-            st = conn.prepareStatement(query);
+        try (PreparedStatement st = conn.prepareStatement(sql)) {
             st.setInt(1, id);
+            int rows = st.executeUpdate();
 
-            int rowsAffected = st.executeUpdate();
-
-            if (rowsAffected == 0) {
-                throw new DbException("No client found with the given ID: " + id);
+            if (rows == 0) {
+                throw new DbException("Delete failed: no client found with ID " + id);
             }
+
+            clientCache.remove(id);
         } catch (SQLException e) {
-            throw new DbException(e.getMessage());
-        } finally {
-            DB.closeStatement(st);
+            throw new DbException("Error deleting client: " + e.getMessage(), e);
         }
     }
 
     @Override
     public Client findById(Integer id) {
-        PreparedStatement st = null;
-        ResultSet rs = null;
-        String query = "SELECT * FROM client WHERE id_client = ? ORDER BY name";
-
-        try{
-            st = conn.prepareStatement(query);
-            st.setInt(1, id);
-            rs = st.executeQuery();
-
-            if(rs.next()){
-                return instantiateClient(rs);
-            }
-
-            return null;
-        } catch (SQLException e) {
-            throw new DbException(e.getMessage());
+        if (clientCache.containsKey(id)) {
+            return clientCache.get(id);
         }
-        finally {
-            DB.closeStatement(st);
-            DB.closeResultSet(rs);
+
+        String sql = "SELECT * FROM client WHERE id_client = ?";
+        try (PreparedStatement st = conn.prepareStatement(sql)) {
+            st.setInt(1, id);
+
+            try (ResultSet rs = st.executeQuery()) {
+                if (rs.next()) {
+                    Client client = instantiateClient(rs);
+                    clientCache.put(client.getId(), client);
+                    return client;
+                }
+                return null;
+            }
+        } catch (SQLException e) {
+            throw new DbException("Error finding client by ID: " + e.getMessage(), e);
         }
     }
 
     @Override
-    public List<Client> findByName(Client client){
-        PreparedStatement st = null;
-        ResultSet rs = null;
-        String query = "SELECT * FROM client WHERE name LIKE ? ORDER BY name";
+    public List<Client> findByName(Client client) {
+        String sql = "SELECT * FROM client WHERE name LIKE ? ORDER BY name";
+        List<Client> list = new ArrayList<>();
 
-        try{
-            st = conn.prepareStatement(query);
+        try (PreparedStatement st = conn.prepareStatement(sql)) {
             st.setString(1, "%" + client.getName() + "%");
-            rs = st.executeQuery();
 
-            List<Client> clients = new ArrayList<>();
+            try (ResultSet rs = st.executeQuery()) {
+                while (rs.next()) {
+                    int id = rs.getInt("id_client");
 
-            while(rs.next()){
-                Client newClient = instantiateClient(rs);
-                clients.add(newClient);
+                    if (clientCache.containsKey(id)) {
+                        list.add(clientCache.get(id));
+                    } else {
+                        Client newClient = instantiateClient(rs);
+                        clientCache.put(id, newClient);
+                        list.add(newClient);
+                    }
+                }
             }
 
-            return clients;
-        } catch(SQLException e){
-            throw new DbException(e.getMessage());
-        } finally {
-            DB.closeStatement(st);
-            DB.closeResultSet(rs);
+            return list;
+        } catch (SQLException e) {
+            throw new DbException("Error finding client by name: " + e.getMessage(), e);
         }
     }
-
-
 
     @Override
     public List<Client> findAll() {
-        PreparedStatement st = null;
-        ResultSet rs = null;
-        String query = "SELECT * FROM client";
-        try{
-            st = conn.prepareStatement(query);
-            rs = st.executeQuery();
+        String sql = "SELECT * FROM client ORDER BY name";
+        List<Client> list = new ArrayList<>();
 
-            List<Client> clienteList = new ArrayList<>();
+        try (PreparedStatement st = conn.prepareStatement(sql);
+             ResultSet rs = st.executeQuery()) {
 
-            while(rs.next()){
-                Client client = instantiateClient(rs);
-                clienteList.add(client);
+            while (rs.next()) {
+                int id = rs.getInt("id_client");
+
+                if (clientCache.containsKey(id)) {
+                    list.add(clientCache.get(id));
+                } else {
+                    Client client = instantiateClient(rs);
+                    clientCache.put(id, client);
+                    list.add(client);
+                }
             }
 
-            return clienteList;
+            return list;
         } catch (SQLException e) {
-            throw new DbException(e.getMessage());
-        }
-        finally {
-            DB.closeStatement(st);
-            DB.closeResultSet(rs);
+            throw new DbException("Error fetching all clients: " + e.getMessage(), e);
         }
     }
 
+    // Utilitários
 
+    private void setStatementParameters(PreparedStatement st, Client client) throws SQLException {
+        st.setString(1, client.getName());
+        st.setString(2, client.getPhone());
+        st.setString(3, client.getEmail());
+        st.setString(4, client.getAddress());
+        st.setString(5, client.getCpf());
+    }
 
     private Client instantiateClient(ResultSet rs) throws SQLException {
         Client client = new Client();
@@ -193,8 +168,10 @@ public class ClientDaoJDBC implements ClientDao {
         client.setEmail(rs.getString("email"));
         client.setAddress(rs.getString("address"));
         client.setCpf(rs.getString("cpf"));
-        client.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
+        Timestamp ts = rs.getTimestamp("created_at");
+        if (ts != null) {
+            client.setCreatedAt(ts.toLocalDateTime());
+        }
         return client;
     }
-
 }

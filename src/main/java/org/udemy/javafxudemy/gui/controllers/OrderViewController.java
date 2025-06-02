@@ -15,13 +15,14 @@ import javafx.stage.Stage;
 import org.udemy.javafxudemy.Main;
 import org.udemy.javafxudemy.gui.listeners.DataChangeListener;
 import org.udemy.javafxudemy.gui.util.Alerts;
-import org.udemy.javafxudemy.model.entities.Client;
-import org.udemy.javafxudemy.model.entities.OrderDetail;
-import org.udemy.javafxudemy.model.entities.Product;
+import org.udemy.javafxudemy.model.entities.*;
 import org.udemy.javafxudemy.model.services.ClientService;
+import org.udemy.javafxudemy.model.services.OrderService;
 import org.udemy.javafxudemy.model.services.ProductService;
 
 import java.net.URL;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -29,6 +30,7 @@ public class OrderViewController implements Initializable, DataChangeListener {
 
     private ClientService clientService;
     private ProductService productService = new ProductService();
+    private OrderService orderService = new OrderService();
 
     //Clients
     @FXML private TableView<Client> tableViewClient;
@@ -75,7 +77,7 @@ public class OrderViewController implements Initializable, DataChangeListener {
     private ObservableList<OrderDetail> orderDetailList = FXCollections.observableArrayList();
 
     @FXML
-    public void onBtSearchClientAction(ActionEvent event) {
+    private void onBtSearchClientAction(ActionEvent event) {
         String name = txtClientSearch.getText().trim();
 
         if (!name.isEmpty()) {
@@ -99,7 +101,7 @@ public class OrderViewController implements Initializable, DataChangeListener {
     }
 
     @FXML
-    public void onBtAddProductAction() {
+    private void onBtAddProductAction() {
         Product selected = tableViewProducts.getSelectionModel().getSelectedItem();
 
         if (selected != null) {
@@ -125,6 +127,33 @@ public class OrderViewController implements Initializable, DataChangeListener {
             }
         } else {
             Alerts.showAlert("Produto não selecionado", null, "Por favor, selecione um produto para adicionar ao pedido.", Alert.AlertType.WARNING);
+        }
+    }
+
+    @FXML
+    private void onBtFinishOrderAction(){
+        try{
+            Client selected = tableViewClient.getSelectionModel().getSelectedItem();
+
+            Order order = new Order();
+            order.setOrderDate(LocalDateTime.now());
+            order.setClient(selected);
+            order.setOrderStatus(OrderStatus.confirmed);
+            order.setDiscount(0.0);
+            order.setPaymentMethod(PaymentMethod.PIX);
+            order.setCreatedAt(LocalDateTime.now());
+            order.setTotalPrice(orderDetailList.stream().mapToDouble(OrderDetail::getLineTotal).sum());
+
+            for (OrderDetail detail : orderDetailList) {
+                detail.setOrder(order);
+            }
+
+            order.setOrderDetailList(new ArrayList<>(orderDetailList));
+
+            orderService.save(order);
+            Alerts.showAlert("Sucess", "Order saved!", "Order saved.", Alert.AlertType.INFORMATION);
+        }catch (Exception e){
+            Alerts.showAlert("Error", "Error saving order", e.getMessage(), Alert.AlertType.ERROR);
         }
     }
 

@@ -1,154 +1,134 @@
 package org.udemy.javafxudemy.model.dao.impl;
 
-import org.udemy.javafxudemy.db.DB;
 import org.udemy.javafxudemy.db.DbException;
 import org.udemy.javafxudemy.model.dao.ProductDao;
 import org.udemy.javafxudemy.model.entities.Product;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
+import java.sql.*;
+import java.util.*;
 
 public class ProductDaoJDBC implements ProductDao {
 
     private final Connection conn;
+    private final Map<Integer, Product> productCache = new HashMap<>();
 
-    public ProductDaoJDBC(Connection conn){
+    public ProductDaoJDBC(Connection conn) {
         this.conn = conn;
     }
 
     @Override
     public void insert(Product obj) {
-        PreparedStatement st = null;
-        ResultSet rs = null;
-        String query = "INSERT INTO product " +
-                        "(product_name, unit_price, is_active) " +
-                        "VALUES (?, ?, ?)";
+        String sql = "INSERT INTO product (product_name, unit_price, is_active) VALUES (?, ?, ?)";
 
-        try{
-            st = conn.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
-            st.setString(1, obj.getName());
-            st.setDouble(2, obj.getUnitPrice());
-            st.setBoolean(3, obj.getIsActive());
+        try (PreparedStatement st = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            setStatementParameters(st, obj);
 
             int rowsAffected = st.executeUpdate();
+            if (rowsAffected == 0) {
+                throw new DbException("Insert failed: no rows affected.");
+            }
 
-            if(rowsAffected > 0){
-                rs = st.getGeneratedKeys();
-                if(rs.next()){
+            try (ResultSet rs = st.getGeneratedKeys()) {
+                if (rs.next()) {
                     int id = rs.getInt(1);
                     obj.setId(id);
+                    productCache.put(id, obj);
                 }
-            }else{
-                throw new DbException("Unexpected error. No Line affected in product table.");
             }
         } catch (SQLException e) {
-            throw new DbException(e.getMessage());
-        }
-        finally {
-            DB.closeStatement(st);
-            DB.closeResultSet(rs);
+            throw new DbException("Error inserting product: " + e.getMessage(), e);
         }
     }
 
     @Override
     public void update(Product obj) {
-        PreparedStatement st = null;
-        String query = "UPDATE product " +
-                        "SET product_name = ?, unit_price = ?, is_active = ? " +
-                        "WHERE id_product = ?";
+        String sql = "UPDATE product SET product_name = ?, unit_price = ?, is_active = ? WHERE id_product = ?";
 
-        try {
-            st = conn.prepareStatement(query);
-            st.setString(1, obj.getName());
-            st.setDouble(2, obj.getUnitPrice());
-            st.setBoolean(3, obj.getIsActive());
+        try (PreparedStatement st = conn.prepareStatement(sql)) {
+            setStatementParameters(st, obj);
             st.setInt(4, obj.getId());
-
             st.executeUpdate();
 
+            productCache.put(obj.getId(), obj);
         } catch (SQLException e) {
-            throw new DbException(e.getMessage());
-        } finally {
-            DB.closeStatement(st);
+            throw new DbException("Error updating product: " + e.getMessage(), e);
         }
     }
 
     @Override
     public void deleteById(Integer id) {
-        PreparedStatement st = null;
-        String query = "DELETE FROM product WHERE id_product = ?";
+        String sql = "DELETE FROM product WHERE id_product = ?";
 
-        try {
-            st = conn.prepareStatement(query);
+        try (PreparedStatement st = conn.prepareStatement(sql)) {
             st.setInt(1, id);
+            int rows = st.executeUpdate();
 
-            int rowsAffected = st.executeUpdate();
-
-            if (rowsAffected == 0) {
-                throw new DbException("No product found with the given ID: " + id);
+            if (rows == 0) {
+                throw new DbException("Delete failed: no product found with ID " + id);
             }
+
+            productCache.remove(id);
         } catch (SQLException e) {
-            throw new DbException(e.getMessage());
-        } finally {
-            DB.closeStatement(st);
+            throw new DbException("Error deleting product: " + e.getMessage(), e);
         }
     }
 
     @Override
     public Product findById(Integer id) {
-        PreparedStatement st = null;
-        ResultSet rs = null;
-        String query = "SELECT * FROM product WHERE id_product = ? ORDER BY product_name";
-
-        try{
-            st = conn.prepareStatement(query);
-            st.setInt(1, id);
-            rs = st.executeQuery();
-
-            if(rs.next()){
-                return instantiateProduct(rs);
-            }
-
-            return null;
-        } catch (SQLException e) {
-            throw new DbException(e.getMessage());
+        if (productCache.containsKey(id)) {
+            return productCache.get(id);
         }
-        finally {
-            DB.closeStatement(st);
-            DB.closeResultSet(rs);
+
+        String sql = "SELECT * FROM product WHERE id_product = ?";
+        try (PreparedStatement st = conn.prepareStatement(sql)) {
+            st.setInt(1, id);
+
+            try (ResultSet rs = st.executeQuery()) {
+                if (rs.next()) {
+                    Product product = instantiateProduct(rs);
+                    productCache.put(product.getId(), product);
+                    return product;
+                }
+                return null;
+            }
+        } catch (SQLException e) {
+            throw new DbException("Error finding product by ID: " + e.getMessage(), e);
         }
     }
 
     @Override
     public List<Product> findAll() {
-        PreparedStatement st = null;
-        ResultSet rs = null;
-        String query = "SELECT * FROM product";
-        try{
-            st = conn.prepareStatement(query);
-            rs = st.executeQuery();
+        String sql = "SELECT * FROM product ORDER BY product_name";
+        List<Product> list = new ArrayList<>();
 
-            List<Product> productList = new ArrayList<>();
+        try (PreparedStatement st = conn.prepareStatement(sql);
+             ResultSet rs = st.executeQuery()) {
 
-            while(rs.next()){
-                Product product = instantiateProduct(rs);
-                productList.add(product);
+            while (rs.next()) {
+                int id = rs.getInt("id_product");
+
+                if (productCache.containsKey(id)) {
+                    list.add(productCache.get(id));
+                } else {
+                    Product product = instantiateProduct(rs);
+                    productCache.put(id, product);
+                    list.add(product);
+                }
             }
 
-            return productList;
+            return list;
         } catch (SQLException e) {
-            throw new DbException(e.getMessage());
-        }
-        finally {
-            DB.closeStatement(st);
-            DB.closeResultSet(rs);
+            throw new DbException("Error fetching all products: " + e.getMessage(), e);
         }
     }
 
+    // Utilitários
+
+    private void setStatementParameters(PreparedStatement st, Product obj) throws SQLException {
+        st.setString(1, obj.getName());
+        st.setDouble(2, obj.getUnitPrice());
+        st.setBoolean(3, obj.getIsActive());
+    }
 
     private Product instantiateProduct(ResultSet rs) throws SQLException {
         Product product = new Product();
@@ -159,5 +139,4 @@ public class ProductDaoJDBC implements ProductDao {
         product.setIsActive(rs.getBoolean("is_active"));
         return product;
     }
-
 }

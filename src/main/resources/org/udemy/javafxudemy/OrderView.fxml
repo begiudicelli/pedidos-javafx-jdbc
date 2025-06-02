@@ -118,7 +118,7 @@
                     <Label text="Total:" />
                     <Label fx:id="lblOrderTotal" text="R$ 0,00" />
                 </HBox>
-                <Button fx:id="btnFinishOrder" prefWidth="150" text="Finalizar Pedido" />
+                <Button fx:id="btnFinishOrder" prefWidth="150" text="Finalizar Pedido" onAction="#onBtFinishOrderAction" />
             </HBox>
         </VBox>
     </HBox>
