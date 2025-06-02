@@ -99,6 +99,7 @@
                     <TableColumn fx:id="tableColumnQuantity" prefWidth="60" resizable="false" text="Qtd" />
                     <TableColumn fx:id="tableColumnUnitPrice" prefWidth="100" resizable="true" text="Preço Unit." />
                     <TableColumn fx:id="tableColumnTotalPrice" prefWidth="100" resizable="true" text="Total" />
+                    <TableColumn fx:id="tableColumnREMOVE" prefWidth="119.0" />
                 </columns>
                 <columnResizePolicy>
                     <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />

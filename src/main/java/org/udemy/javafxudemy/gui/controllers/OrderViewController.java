@@ -1,5 +1,6 @@
 package org.udemy.javafxudemy.gui.controllers;
 
+import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -66,6 +67,9 @@ public class OrderViewController implements Initializable, DataChangeListener {
     @FXML private TableColumn<OrderDetail, Integer> tableColumnQuantity;
     @FXML private TableColumn<OrderDetail, Double> tableColumnUnitPrice;
     @FXML private TableColumn<OrderDetail, Double> tableColumnTotalPrice;
+    @FXML private TableColumn<OrderDetail, OrderDetail> tableColumnREMOVE;
+
+    @FXML private Label lblOrderTotal;
 
 
     private ObservableList<OrderDetail> orderDetailList = FXCollections.observableArrayList();
@@ -109,6 +113,7 @@ public class OrderViewController implements Initializable, DataChangeListener {
                 existing.setQuantity(newQuantity);
                 existing.setLineTotal(newQuantity * existing.getUnitPrice());
                 tableViewOrder.refresh();
+                updateOrderTotal();
             } else {
                 OrderDetail newDetail = new OrderDetail();
                 newDetail.setProduct(selected);
@@ -116,6 +121,7 @@ public class OrderViewController implements Initializable, DataChangeListener {
                 newDetail.setUnitPrice(selected.getUnitPrice());
                 newDetail.setLineTotal(selected.getUnitPrice());
                 orderDetailList.add(newDetail);
+                updateOrderTotal();
             }
         } else {
             Alerts.showAlert("Produto não selecionado", null, "Por favor, selecione um produto para adicionar ao pedido.", Alert.AlertType.WARNING);
@@ -145,6 +151,7 @@ public class OrderViewController implements Initializable, DataChangeListener {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         initializeNodes();
+        initRemoveButtons();
     }
 
     private void loadClientData(Client client) {
@@ -186,6 +193,14 @@ public class OrderViewController implements Initializable, DataChangeListener {
 
     }
 
+    private void updateOrderTotal() {
+        double total = orderDetailList.stream()
+                .mapToDouble(OrderDetail::getLineTotal)
+                .sum();
+        lblOrderTotal.setText(String.format("Total: R$ %.2f", total));
+    }
+
+
     public void updateTableView(){
         if(clientService == null) throw new IllegalStateException("Service was null.");
 
@@ -198,6 +213,30 @@ public class OrderViewController implements Initializable, DataChangeListener {
         tableViewProducts.setItems(productObsList);
     }
 
+    private void initRemoveButtons() {
+        tableColumnREMOVE.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue()));
+        tableColumnREMOVE.setCellFactory(param -> new TableCell<OrderDetail, OrderDetail>() {
+            private final Button button = new Button("Remover");
+
+            @Override
+            protected void updateItem(OrderDetail detail, boolean empty) {
+                super.updateItem(detail, empty);
+
+                if (empty || detail == null) {
+                    setGraphic(null);
+                    return;
+                }
+
+                setGraphic(button);
+                button.setOnAction(event -> {
+                    orderDetailList.remove(detail);
+                    updateOrderTotal();
+                });
+            }
+        });
+    }
+
+
     @Override
     public void onDataChanged() {
         updateTableView();
@@ -206,4 +245,6 @@ public class OrderViewController implements Initializable, DataChangeListener {
     public void setClientService(ClientService clientService) {
         this.clientService = clientService;
     }
+
+
 }
