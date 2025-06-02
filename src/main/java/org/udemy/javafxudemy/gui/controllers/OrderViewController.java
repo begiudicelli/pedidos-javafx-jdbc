@@ -1,5 +1,7 @@
 package org.udemy.javafxudemy.gui.controllers;
 
+import javafx.beans.property.ReadOnlyStringWrapper;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -13,6 +15,7 @@ import org.udemy.javafxudemy.Main;
 import org.udemy.javafxudemy.gui.listeners.DataChangeListener;
 import org.udemy.javafxudemy.gui.util.Alerts;
 import org.udemy.javafxudemy.model.entities.Client;
+import org.udemy.javafxudemy.model.entities.OrderDetail;
 import org.udemy.javafxudemy.model.entities.Product;
 import org.udemy.javafxudemy.model.services.ClientService;
 import org.udemy.javafxudemy.model.services.ProductService;
@@ -47,11 +50,25 @@ public class OrderViewController implements Initializable, DataChangeListener {
     //Products list
     @FXML private TableView<Product> tableViewProducts;
     @FXML private TableColumn<Product, Integer> tableColumnProductId;
-    @FXML private TableColumn<Product, Integer> tableColumnProductName;
-    @FXML private TableColumn<Product, Integer> tableColumnProductPrice;
+    @FXML private TableColumn<Product, String> tableColumnProductName;
+    @FXML private TableColumn<Product, Double> tableColumnProductPrice;
+
+
+    @FXML private Label lblSelectedProduct;
+    @FXML private Button btAddProduct;
 
     private ObservableList<Product> productObsList;
 
+
+    //Order
+    @FXML private TableView<OrderDetail> tableViewOrder;
+    @FXML private TableColumn<OrderDetail, String> tableColumnProduct;
+    @FXML private TableColumn<OrderDetail, Integer> tableColumnQuantity;
+    @FXML private TableColumn<OrderDetail, Double> tableColumnUnitPrice;
+    @FXML private TableColumn<OrderDetail, Double> tableColumnTotalPrice;
+
+
+    private ObservableList<OrderDetail> orderDetailList = FXCollections.observableArrayList();
 
     @FXML
     public void onBtSearchClientAction(ActionEvent event) {
@@ -78,11 +95,49 @@ public class OrderViewController implements Initializable, DataChangeListener {
     }
 
     @FXML
+    public void onBtAddProductAction() {
+        Product selected = tableViewProducts.getSelectionModel().getSelectedItem();
+
+        if (selected != null) {
+            OrderDetail existing = orderDetailList.stream()
+                    .filter(detail -> detail.getProduct().getId().equals(selected.getId()))
+                    .findFirst()
+                    .orElse(null);
+
+            if (existing != null) {
+                int newQuantity = existing.getQuantity() + 1;
+                existing.setQuantity(newQuantity);
+                existing.setLineTotal(newQuantity * existing.getUnitPrice());
+                tableViewOrder.refresh();
+            } else {
+                OrderDetail newDetail = new OrderDetail();
+                newDetail.setProduct(selected);
+                newDetail.setQuantity(1);
+                newDetail.setUnitPrice(selected.getUnitPrice());
+                newDetail.setLineTotal(selected.getUnitPrice());
+                orderDetailList.add(newDetail);
+            }
+        } else {
+            Alerts.showAlert("Produto não selecionado", null, "Por favor, selecione um produto para adicionar ao pedido.", Alert.AlertType.WARNING);
+        }
+    }
+
+
+    @FXML
     private void handleClientSelection(MouseEvent event) {
         if (event.getClickCount() == 1) {
             Client selected = tableViewClient.getSelectionModel().getSelectedItem();
             if (selected != null) {
                 loadClientData(selected);
+            }
+        }
+    }
+
+    @FXML void handleProductSelection(MouseEvent event){
+        if(event.getClickCount() == 1){
+            Product selected = tableViewProducts.getSelectionModel().getSelectedItem();
+            if(selected != null){
+                lblSelectedProduct.setText(selected.getName());
             }
         }
     }
@@ -102,6 +157,7 @@ public class OrderViewController implements Initializable, DataChangeListener {
 
 
     private void initializeNodes(){
+        //Table View Client
         tableColumnClientId.setCellValueFactory(new PropertyValueFactory<>("id"));
         tableColumnClientName.setCellValueFactory(new PropertyValueFactory<>("name"));
         tableColumnClientPhone.setCellValueFactory(new PropertyValueFactory<>("phone"));
@@ -112,9 +168,22 @@ public class OrderViewController implements Initializable, DataChangeListener {
         Stage stage = (Stage) Main.getMainScene().getWindow();
         tableViewClient.prefHeightProperty().bind(stage.heightProperty());
 
+        //Table View Product
         tableColumnProductId.setCellValueFactory(new PropertyValueFactory<>("id"));
         tableColumnProductName.setCellValueFactory(new PropertyValueFactory<>("name"));
         tableColumnProductPrice.setCellValueFactory(new PropertyValueFactory<>("unitPrice"));
+
+        //Table View Order Detail
+        tableColumnProduct.setCellValueFactory(cellData ->
+                new ReadOnlyStringWrapper(cellData.getValue().getProduct().getName()));
+
+        tableColumnQuantity.setCellValueFactory(new PropertyValueFactory<>("quantity"));
+        tableColumnUnitPrice.setCellValueFactory(new PropertyValueFactory<>("unitPrice"));
+        tableColumnTotalPrice.setCellValueFactory(new PropertyValueFactory<>("lineTotal"));
+
+        tableViewOrder.setItems(orderDetailList);
+
+
     }
 
     public void updateTableView(){
@@ -123,7 +192,6 @@ public class OrderViewController implements Initializable, DataChangeListener {
         List<Client> clientList = clientService.findAll();
         clientObsList = FXCollections.observableArrayList(clientList);
         tableViewClient.setItems(clientObsList);
-
 
         List<Product> productList = productService.findAll();
         productObsList = FXCollections.observableArrayList(productList);

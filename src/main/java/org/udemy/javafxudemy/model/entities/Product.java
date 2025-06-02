@@ -89,4 +89,8 @@ public class Product implements Serializable {
                 ", created_at=" + createdAt +
                 '}';
     }
+
+    public Product getProduct() {
+        return this;
+    }
 }

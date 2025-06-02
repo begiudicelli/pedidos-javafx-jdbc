@@ -69,7 +69,7 @@
             <Label text="Produtos Disponíveis:" />
 
             <!-- TableView para mostrar produtos disponíveis -->
-            <TableView fx:id="tableViewProducts"  prefHeight="200">
+            <TableView fx:id="tableViewProducts"  prefHeight="200" onMouseClicked="#handleProductSelection">
                 <columns>
                     <TableColumn fx:id="tableColumnProductId" prefWidth="50" text="ID" />
                     <TableColumn fx:id="tableColumnProductName" prefWidth="150" text="Nome" />
@@ -85,7 +85,7 @@
                 <Label text="Produto Selecionado:" />
                 <Label fx:id="lblSelectedProduct" text="-" />
                 <TextField fx:id="txtQuantity" maxWidth="60" promptText="Qtd" text="1" />
-                <Button fx:id="btnAddProduct" text="Adicionar ao Pedido" />
+                <Button fx:id="btAddProduct" text="Adicionar ao Pedido" onAction="#onBtAddProductAction"/>
             </HBox>
 
             <Separator />
@@ -93,13 +93,12 @@
             <Label text="Itens do Pedido:" />
 
             <!-- TableView para itens adicionados ao pedido -->
-            <TableView fx:id="tableItems" prefHeight="200">
+            <TableView fx:id="tableViewOrder" prefHeight="200">
                 <columns>
-                    <TableColumn fx:id="colItemProduct" prefWidth="200" resizable="true" text="Produto" />
-                    <TableColumn fx:id="colItemQuantity" prefWidth="60" resizable="false" text="Qtd" />
-                    <TableColumn fx:id="colItemUnitPrice" prefWidth="100" resizable="true" text="Preço Unit." />
-                    <TableColumn fx:id="colItemTotal" prefWidth="100" resizable="true" text="Total" />
-                    <TableColumn fx:id="colItemRemove" prefWidth="80" resizable="false" text="Remover" />
+                    <TableColumn fx:id="tableColumnProduct" prefWidth="200" resizable="true" text="Produto" />
+                    <TableColumn fx:id="tableColumnQuantity" prefWidth="60" resizable="false" text="Qtd" />
+                    <TableColumn fx:id="tableColumnUnitPrice" prefWidth="100" resizable="true" text="Preço Unit." />
+                    <TableColumn fx:id="tableColumnTotalPrice" prefWidth="100" resizable="true" text="Total" />
                 </columns>
                 <columnResizePolicy>
                     <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
